@@ -39,30 +39,22 @@ export function Hero() {
 
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 mb-8"
-        >
-          <Zap className="w-3.5 h-3.5 text-emerald-500" />
-          <span className="text-sm text-zinc-400">Now in Public Beta</span>
-        </motion.div>
+
 
         {/* Headline with text mask animation */}
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col items-center">
           <AnimatedText
-            text="Code the vibe."
+            text="Code with Vibe"
             type="split"
             delay={0.2}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-2"
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-2 text-center"
             style={{ fontFamily: "var(--font-cal-sans), sans-serif" }}
           />
           <AnimatedText
-            text="Ship the flow."
+            text="Build. Run. Repeat"
             type="split"
             delay={0.5}
-            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-500"
+            className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-zinc-500 text-center"
             style={{ fontFamily: "var(--font-cal-sans), sans-serif" }}
           />
         </div>
@@ -91,44 +83,10 @@ export function Hero() {
             Start Coding
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="rounded-full px-8 h-12 text-base font-medium border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:text-white hover:border-zinc-700 bg-transparent"
-          >
-            See It Live
-          </Button>
+          
         </motion.div>
 
-        {/* Social Proof */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="flex flex-col items-center gap-4"
-        >
-          <div className="flex items-center -space-x-3">
-            {avatars.map((avatar, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.5, x: -20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: 0.8 + index * 0.1 }}
-                className="relative"
-              >
-                <img
-                  src={avatar || "/placeholder.svg"}
-                  alt=""
-                  className="w-10 h-10 rounded-full border-2 border-zinc-950 object-cover"
-                />
-              </motion.div>
-            ))}
-          </div>
-          <p className="text-sm text-zinc-500">
-            Used by{" "}
-            <span className="text-zinc-300 font-medium">indie hackers, startup teams, and late-night creators</span>
-          </p>
-        </motion.div>
+
       </div>
     </section>
   )

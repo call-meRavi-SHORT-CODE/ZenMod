@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type CSSProperties } from "react"
 import gsap from "gsap"
 
 interface AnimatedTextProps {
@@ -8,9 +8,10 @@ interface AnimatedTextProps {
   className?: string
   type?: "split" | "typewriter" | "fade" | "slide"
   delay?: number
+  style?: CSSProperties
 }
 
-export function AnimatedText({ text, className = "", type = "split", delay = 0 }: AnimatedTextProps) {
+export function AnimatedText({ text, className = "", type = "split", delay = 0, style }: AnimatedTextProps) {
   const textRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -91,5 +92,5 @@ export function AnimatedText({ text, className = "", type = "split", delay = 0 }
     }
   }, [text, type, delay])
 
-  return <div ref={textRef} className={className} />
+  return <div ref={textRef} className={className} style={style} />
 }

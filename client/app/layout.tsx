@@ -1,7 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Manrope } from "next/font/google"
-import localFont from "next/font/local"
+import { Instrument_Sans, Inter, Manrope } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 
@@ -10,22 +9,22 @@ const manrope = Manrope({
   variable: "--font-manrope",
 })
 
-const calSans = localFont({
-  src: "./fonts/CalSans-SemiBold.woff2",
-  variable: "--font-cal-sans",
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
   display: "swap",
 })
 
-const instrumentSans = localFont({
-  src: "./fonts/InstrumentSans-Variable.woff2",
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
   variable: "--font-instrument-sans",
   display: "swap",
 })
 
 export const metadata: Metadata = {
-  title: "ZenMod - AI Coding Playground",
-  description: "Code the vibe. Ship the flow. An AI coding playground where ideas turn into running apps — instantly.",
-    generator: 'v0.app'
+  title: "ZenMod",
+  description: "Code with vibe. Build. Run. Repeat. An AI coding playground where ideas turn into running apps — instantly.",
+  generator: 'v0.app'
 }
 
 export default function RootLayout({
@@ -35,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${manrope.variable} ${calSans.variable} ${instrumentSans.variable} font-sans antialiased`}>
+      <body className={`${manrope.variable} ${inter.variable} ${instrumentSans.variable} font-sans antialiased`}>
         <div className="noise-overlay" aria-hidden="true" />
         {children}
         <Analytics />
