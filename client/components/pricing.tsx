@@ -56,7 +56,10 @@ export function Pricing() {
   return (
     <section id="pricing" className="py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
           <h2
@@ -101,14 +104,21 @@ export function Pricing() {
               </span>
             </button>
           </div>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
+          ref={ref}
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {plans.map((plan, index) => (
-            <div
+            <motion.div
               key={plan.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
               className={`relative p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${plan.highlighted
                 ? "bg-zinc-900 border-zinc-700"
                 : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-600"
@@ -161,9 +171,9 @@ export function Pricing() {
               >
                 {plan.cta}
               </Button>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

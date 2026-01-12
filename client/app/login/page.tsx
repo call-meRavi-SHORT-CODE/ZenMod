@@ -5,12 +5,22 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { Github, Lock, Mail } from "lucide-react"
 
+import { useRouter } from "next/navigation"
+
 export default function LoginPage() {
     const [email, setEmail] = useState("")
+    const router = useRouter()
+
+    const handleLogin = () => {
+        router.push("/dashboard")
+    }
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
-            <div
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
                 className="w-full max-w-sm"
             >
                 <div className="text-center mb-8">
@@ -23,7 +33,7 @@ export default function LoginPage() {
                     <p className="text-zinc-400">Sign in to ZenMod to start building.</p>
                 </div>
 
-                <form className="space-y-4 mb-8" onSubmit={(e) => e.preventDefault()}>
+                <form className="space-y-4 mb-8" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
                     <div>
                         <input
                             type="email"
@@ -51,7 +61,10 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-3">
-                    <button className="w-full py-3 px-4 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900 transition-all flex items-center justify-center gap-2">
+                    <button
+                        onClick={handleLogin}
+                        className="w-full py-3 px-4 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
+                    >
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                             <path
                                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -72,7 +85,10 @@ export default function LoginPage() {
                         </svg>
                         Google
                     </button>
-                    <button className="w-full py-3 px-4 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900 transition-all flex items-center justify-center gap-2">
+                    <button
+                        onClick={handleLogin}
+                        className="w-full py-3 px-4 bg-black border border-zinc-800 rounded-lg hover:border-zinc-700 hover:bg-zinc-900 transition-all flex items-center justify-center gap-2"
+                    >
                         <Github className="w-5 h-5" />
                         GitHub
                     </button>
@@ -95,7 +111,7 @@ export default function LoginPage() {
                         Privacy Policy
                     </Link>
                 </div>
-            </div>
+            </motion.div>
         </div>
     )
 }

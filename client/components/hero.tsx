@@ -61,15 +61,20 @@ export function Hero() {
         </div>
 
         {/* Subheadline */}
-        <AnimatedText
-          text="An AI coding playground where ideas turn into running apps — instantly. Chat. Generate. Edit. Run. Repeat."
-          type="split"
-          delay={0.5}
-          className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-16 leading-relaxed"
-        />
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-16 leading-relaxed"
+        >
+          An AI coding playground where ideas turn into running apps — instantly. Chat. Generate. Edit. Run. Repeat.
+        </motion.p>
 
         {/* CTAs */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
           <Link href="/login">
@@ -82,7 +87,7 @@ export function Hero() {
             </Button>
           </Link>
 
-        </div>
+        </motion.div>
 
 
       </div>
