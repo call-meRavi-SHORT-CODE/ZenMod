@@ -133,16 +133,11 @@ export function BentoGrid() {
           <p className="text-zinc-400 max-w-2xl mx-auto">Built for people who hate boilerplate and love momentum.</p>
         </div>
 
-        <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
+        <div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {/* AI Feature */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="md:col-span-2 group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 overflow-hidden"
           >
             <div className="flex items-start justify-between mb-8">
@@ -156,11 +151,10 @@ export function BentoGrid() {
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Editor Feature */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300"
           >
             <div className="p-2 rounded-lg bg-zinc-800 w-fit mb-4">
@@ -169,11 +163,10 @@ export function BentoGrid() {
             <h3 className="text-lg font-semibold text-white mb-2">Edit in real time</h3>
             <p className="text-zinc-400 text-sm mb-6">Full-power editor. Multi-file projects. Instant AI updates.</p>
             <div className="text-sm text-zinc-300">Your code. Your rules.</div>
-          </motion.div>
+          </div>
 
           {/* Runtime Feature */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300"
           >
             <div className="p-2 rounded-lg bg-zinc-800 w-fit mb-4">
@@ -187,11 +180,10 @@ export function BentoGrid() {
               ~40ms
               <span className="text-zinc-500">preview refresh</span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Command Palette */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300"
           >
             <div className="p-2 rounded-lg bg-zinc-800 w-fit mb-4">
@@ -207,11 +199,10 @@ export function BentoGrid() {
                 K
               </kbd>
             </div>
-          </motion.div>
+          </div>
 
           {/* Monitoring Feature */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300"
           >
             <div className="p-2 rounded-lg bg-zinc-800 w-fit mb-4">
@@ -220,11 +211,10 @@ export function BentoGrid() {
             <h3 className="text-lg font-semibold text-white mb-2">Stay in the loop</h3>
             <p className="text-zinc-400 text-sm mb-4">See what's running. What's breaking. What's fast.</p>
             <div className="text-sm text-zinc-400">Live stats. Zero guesswork.</div>
-          </motion.div>
+          </div>
 
           {/* Security Feature */}
-          <motion.div
-            variants={itemVariants}
+          <div
             className="group relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300"
           >
             <div className="p-2 rounded-lg bg-zinc-800 w-fit mb-4">
@@ -233,8 +223,8 @@ export function BentoGrid() {
             <h3 className="text-lg font-semibold text-white mb-2">Safe by default</h3>
             <p className="text-zinc-400 text-sm mb-4">Isolated sandboxes. Hard limits. Auto-cleanups.</p>
             <div className="text-sm text-zinc-400">Break things safely 😌</div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   )

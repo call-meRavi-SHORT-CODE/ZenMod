@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 const plans = [
   {
     name: "Free",
-    icon: "🌱",
+    icon: "",
     description: "For vibing, learning, and shipping your first ideas",
     price: { monthly: 0, yearly: 0 },
     features: ["1 workspace", "AI code generation (limited)", "Live preview", "Community support"],
@@ -17,7 +17,7 @@ const plans = [
   },
   {
     name: "Pro",
-    icon: "⭐",
+    icon: "",
     description: "For builders who don't want limits",
     price: { monthly: 29, yearly: 24 },
     features: ["Unlimited projects", "Advanced AI agent", "Faster runtimes", "File exports", "Priority support"],
@@ -26,7 +26,7 @@ const plans = [
   },
   {
     name: "Teams",
-    icon: "🏢",
+    icon: "",
     description: "For squads shipping at scale",
     price: { monthly: null, yearly: null },
     features: ["Shared workspaces", "Custom agents", "Access control", "Audit logs", "SLA uptime"],
@@ -56,10 +56,7 @@ export function Pricing() {
   return (
     <section id="pricing" className="py-24 px-4">
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+        <div
           className="text-center mb-12"
         >
           <h2
@@ -74,9 +71,8 @@ export function Pricing() {
           <div className="inline-flex items-center p-1 rounded-full bg-zinc-900 border border-zinc-800">
             <button
               onClick={() => setBillingCycle("monthly")}
-              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${
-                billingCycle === "monthly" ? "text-white" : "text-zinc-400"
-              }`}
+              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${billingCycle === "monthly" ? "text-white" : "text-zinc-400"
+                }`}
             >
               {billingCycle === "monthly" && (
                 <motion.div
@@ -89,9 +85,8 @@ export function Pricing() {
             </button>
             <button
               onClick={() => setBillingCycle("yearly")}
-              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${
-                billingCycle === "yearly" ? "text-white" : "text-zinc-400"
-              }`}
+              className={`relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${billingCycle === "yearly" ? "text-white" : "text-zinc-400"
+                }`}
             >
               {billingCycle === "yearly" && (
                 <motion.div
@@ -106,26 +101,18 @@ export function Pricing() {
               </span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
+        <div
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {plans.map((plan, index) => (
-            <motion.div
+            <div
               key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
-              className={`relative p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${
-                plan.highlighted
-                  ? "bg-zinc-900 border-zinc-700"
-                  : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-600"
-              }`}
+              className={`relative p-6 rounded-2xl border transition-all duration-300 hover:scale-[1.02] ${plan.highlighted
+                ? "bg-zinc-900 border-zinc-700"
+                : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-600"
+                }`}
             >
               {plan.highlighted && <BorderBeam />}
 
@@ -152,7 +139,7 @@ export function Pricing() {
                     <span className="text-4xl font-bold text-white">Custom</span>
                   )}
                 </div>
-                {billingCycle === "yearly" && plan.price.yearly > 0 && (
+                {billingCycle === "yearly" && plan.price.yearly !== null && plan.price.yearly > 0 && (
                   <p className="text-xs text-zinc-500 mt-1">Billed annually (${plan.price.yearly * 12}/year)</p>
                 )}
               </div>
@@ -167,17 +154,16 @@ export function Pricing() {
               </ul>
 
               <Button
-                className={`w-full rounded-full ${
-                  plan.highlighted
-                    ? "shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200"
-                    : "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700"
-                }`}
+                className={`w-full rounded-full ${plan.highlighted
+                  ? "shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200"
+                  : "bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700"
+                  }`}
               >
                 {plan.cta}
               </Button>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

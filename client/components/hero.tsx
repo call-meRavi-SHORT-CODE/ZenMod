@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { AnimatedText } from "@/components/animated-text"
 import { VibeBackground } from "@/components/vibe-background"
 
@@ -28,7 +29,7 @@ const textRevealVariants = {
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-24 pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-32 pb-16 overflow-hidden">
       <VibeBackground />
 
       {/* Background gradient */}
@@ -38,7 +39,7 @@ export function Hero() {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-zinc-800/20 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto text-center">
-        {/* Badge */}
+
 
 
         {/* Headline with text mask animation */}
@@ -60,31 +61,28 @@ export function Hero() {
         </div>
 
         {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          An AI coding playground where ideas turn into running apps — instantly. Chat. Generate. Edit. Run. Repeat.
-        </motion.p>
+        <AnimatedText
+          text="An AI coding playground where ideas turn into running apps — instantly. Chat. Generate. Edit. Run. Repeat."
+          type="split"
+          delay={0.5}
+          className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-16 leading-relaxed"
+        />
 
         {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+        <div
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <Button
-            size="lg"
-            className="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-8 h-12 text-base font-medium shadow-lg shadow-white/10"
-          >
-            Start Coding
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-          
-        </motion.div>
+          <Link href="/login">
+            <Button
+              size="lg"
+              className="shimmer-btn bg-white text-zinc-950 hover:bg-zinc-200 rounded-full px-8 h-12 text-base font-medium shadow-lg shadow-white/10"
+            >
+              Start Coding
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </Link>
+
+        </div>
 
 
       </div>
