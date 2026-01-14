@@ -34,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${manrope.variable} ${inter.variable} ${instrumentSans.variable} font-sans antialiased`}>
+      <body className={`${manrope.variable} ${inter.variable} ${instrumentSans.variable} font-sans antialiased`} suppressHydrationWarning>
         <div className="noise-overlay" aria-hidden="true" />
         {children}
         <Analytics />
