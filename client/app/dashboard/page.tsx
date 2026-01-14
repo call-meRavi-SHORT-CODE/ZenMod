@@ -19,6 +19,7 @@ import {
     MessageSquare,
     Gift,
 } from "lucide-react"
+import LLMConfiguration from "@/components/llm-configuration"
 
 export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState("new-chat")
@@ -27,12 +28,11 @@ export default function DashboardPage() {
         { icon: <MessageSquare size={18} />, label: "New Chat", id: "new-chat", isActive: true },
         { icon: <Search size={18} />, label: "Search", id: "search" },
         { icon: <FolderOpen size={18} />, label: "Projects", id: "projects" },
-        { icon: <Clock size={18} />, label: "Recents", id: "recents" },
-        { icon: <Layout size={18} />, label: "Design Systems", id: "design-systems" },
+        { icon: <Settings size={18} />, label: "LLM Configuration", id: "llm-configuration" },
         { icon: <FileText size={18} />, label: "Templates", id: "templates" },
     ]
 
-    const recents = [
+    const recents = [   
         "Nexus Work Management",
         "ZenMod AI platform",
         "Recreate BitFlow dashb...",
@@ -43,16 +43,16 @@ export default function DashboardPage() {
     ]
 
     return (
-        <div className="flex h-screen bg-black text-white font-sans overflow-hidden">
+        <div className="flex h-screen bg-[#191919] text-[#A4A4A4] font-sans overflow-hidden">
             {/* Sidebar */}
-            <aside className="w-64 flex-shrink-0 border-r border-zinc-800 flex flex-col">
+            <aside className="w-64 flex-shrink-0 border-r border-[#4A4A4A] flex flex-col bg-[#191919]">
                 {/* Header */}
                 <div className="p-4 flex items-center gap-2">
                     <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
                         <span className="text-black font-bold text-sm">Z</span>
                     </div>
-                    <span className="font-semibold">ZenMod</span>
-                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">Free</span>
+                    <span className="font-semibold text-white">ZenMod</span>
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full bg-[#353535] text-[#7C7D7D]">Free</span>
                 </div>
 
                 {/* Navigation */}
@@ -61,9 +61,9 @@ export default function DashboardPage() {
                         <button
                             key={item.id}
                             onClick={() => setActiveTab(item.id)}
-                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${activeTab === item.id
-                                ? "bg-zinc-800 text-white"
-                                : "text-zinc-400 hover:text-white hover:bg-zinc-900"
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-base transition-colors ${activeTab === item.id
+                                ? "bg-[#353535] text-white"
+                                : "text-[#7C7D7D] hover:text-white hover:bg-[#353535]"
                                 }`}
                         >
                             {item.icon}
@@ -72,14 +72,14 @@ export default function DashboardPage() {
                     ))}
 
                     <div className="mt-8 px-3">
-                        <button className="flex items-center justify-between w-full text-xs text-zinc-500 hover:text-zinc-300 mb-2">
+                        <button className="flex items-center justify-between w-full text-base text-[#7C7D7D] hover:text-white mb-2">
                             <span>Favorites</span>
                             <span className="opacity-0 hover:opacity-100 transition-opacity">&gt;</span>
                         </button>
                     </div>
 
                     <div className="mt-4 px-3">
-                        <button className="flex items-center justify-between w-full text-xs text-zinc-500 hover:text-zinc-300 mb-2">
+                        <button className="flex items-center justify-between w-full text-base text-[#7C7D7D] hover:text-white mb-2">
                             <span>Recents</span>
                             <ArrowUp className="w-3 h-3 rotate-180" />
                         </button>
@@ -87,7 +87,7 @@ export default function DashboardPage() {
                             {recents.map((recent, i) => (
                                 <button
                                     key={i}
-                                    className="w-full text-left truncate px-2 py-1.5 text-sm text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg transition-colors"
+                                    className="w-full text-left truncate px-2 py-1.5 text-base text-[#7C7D7D] hover:text-white hover:bg-[#353535] rounded-lg transition-colors"
                                 >
                                     {recent}
                                 </button>
@@ -97,89 +97,97 @@ export default function DashboardPage() {
                 </nav>
 
                 {/* User Footer */}
-                <div className="p-4 border-t border-zinc-800">
-                    <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-zinc-900 transition-colors">
-                        <div className="w-8 h-8 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-medium border border-purple-500/30">
-                            JD
+                <div className="p-4 border-t-0 border-b border-b-[#232323] shadow-[0_-2px_8px_0_rgba(0,0,0,0.12)] space-y-3">
+                    <button className="flex items-center w-full p-2 rounded-lg text-base text-white hover:text-white hover:bg-[#353535] transition-colors">
+                        <Settings size={20} className="text-white" />
+                        <span className="ml-2">Settings</span>
+                    </button>
+                    <button className="flex items-center gap-3 w-full p-2 rounded-lg text-base hover:bg-[#353535] transition-colors">
+                        <div className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-medium border border-purple-500/30">
+                            RA
                         </div>
-                        <div className="flex-1 text-left">
-                            <div className="text-sm font-medium">John Doe</div>
-                            <div className="text-xs text-zinc-500">Free Plan</div>
+                        <div className="flex-1 text-left min-w-0">
+                            <div className="text-sm font-medium text-white truncate">ravikrishnaj25@gmail...</div>
                         </div>
-                        <MoreHorizontal size={16} className="text-zinc-500" />
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 flex flex-col relative">
+            <main className="flex-1 flex flex-col relative bg-[#191919]">
                 {/* Top Header */}
-                <header className="h-14 border-b border-zinc-800 flex items-center justify-end px-6 gap-4">
-                    <button className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Upgrade</button>
-                    <button className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Feedback</button>
-                    <button className="text-sm font-medium text-zinc-400 hover:text-white transition-colors flex items-center gap-1">
+                <header className="h-14 border-b border-[#4A4A4A] flex items-center justify-end px-6 gap-4 bg-[#272727]">
+                    <button className="text-sm font-medium text-[#7C7D7D] hover:text-[#A4A4A4] transition-colors">Upgrade</button>
+                    <button className="text-sm font-medium text-[#7C7D7D] hover:text-[#A4A4A4] transition-colors">Feedback</button>
+                    <button className="text-sm font-medium text-[#7C7D7D] hover:text-[#A4A4A4] transition-colors flex items-center gap-1">
                         <Gift size={14} /> Refer
                     </button>
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-zinc-800 border border-zinc-700">
-                        <div className="w-4 h-4 rounded-full bg-zinc-600"></div>
-                        <span className="text-sm font-mono">0.35</span>
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#353535] border border-[#4A4A4A]">
+                        <div className="w-4 h-4 rounded-full bg-[#616161]"></div>
+                        <span className="text-sm font-mono text-[#A4A4A4]">0.35</span>
                     </div>
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-pink-500 to-orange-500"></div>
                 </header>
 
-                {/* Central Chat Interface */}
-                <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full px-4">
-                    <div className="text-center mb-8">
-                        <h1 className="text-4xl font-semibold mb-2 tracking-tight">What do you want to create?</h1>
-                        <p className="text-zinc-500">Build stunning apps & websites by chatting with AI.</p>
-                    </div>
+                {/* Central Content Area */}
+                <div className="flex-1 flex flex-col overflow-auto">
+                    {activeTab === "llm-configuration" ? (
+                        <LLMConfiguration isEmbedded={true} />
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center max-w-3xl mx-auto w-full px-4">
+                            <div className="text-center mb-8">
+                                <h1 className="text-4xl font-semibold mb-2 tracking-tight text-white">What do you want to create?</h1>
+                                <p className="text-[#7C7D7D]">Build stunning apps & websites by chatting with AI.</p>
+                            </div>
 
-                    <div className="w-full relative">
-                        <div className="relative bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl focus-within:border-zinc-700 focus-within:ring-1 focus-within:ring-zinc-700 transition-all">
-                            <textarea
-                                className="w-full bg-transparent text-white placeholder:text-zinc-600 px-4 py-4 min-h-[120px] resize-none outline-none text-base"
-                                placeholder="Ask ZenMod to build..."
-                            />
+                            <div className="w-full relative">
+                                <div className="relative bg-[#272727] border border-[#4A4A4A] rounded-xl overflow-hidden shadow-2xl focus-within:border-[#353535] focus-within:ring-1 focus-within:ring-[#353535] transition-all">
+                                    <textarea
+                                        className="w-full bg-transparent text-[#A4A4A4] placeholder:text-[#636363] px-4 py-4 min-h-[120px] resize-none outline-none text-base"
+                                        placeholder="Ask ZenMod to build..."
+                                    />
 
-                            <div className="px-3 pb-3 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <button className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
-                                        <Plus size={18} />
-                                    </button>
-                                    <button className="px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 text-sm hover:text-white hover:bg-zinc-700 transition-colors flex items-center gap-2">
-                                        <span className="w-4 h-4 flex items-center justify-center border border-zinc-500 rounded text-[10px]">M</span>
-                                        Mini
+                                    <div className="px-3 pb-3 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <button className="p-2 rounded-lg text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors">
+                                                <Plus size={18} />
+                                            </button>
+                                            <button className="px-3 py-1.5 rounded-lg bg-[#353535] text-[#7C7D7D] text-sm hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors flex items-center gap-2">
+                                                <span className="w-4 h-4 flex items-center justify-center border border-[#616161] rounded text-[10px]">M</span>
+                                                Mini
+                                            </button>
+                                        </div>
+
+                                        <button className="p-2 rounded-lg bg-[#353535] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors">
+                                            <ArrowUp size={18} />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="mt-3 flex items-center justify-end px-1">
+                                    <button className="text-xs text-emerald-500 hover:text-emerald-400 font-medium">
+                                        Upgrade Plan
                                     </button>
                                 </div>
 
-                                <button className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors">
-                                    <ArrowUp size={18} />
-                                </button>
+                                <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                                    <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4A4A4A] bg-[#272727] text-xs text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors">
+                                        <Copy size={14} /> Clone a Screenshot
+                                    </button>
+                                    <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4A4A4A] bg-[#272727] text-xs text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors">
+                                        <ImageIcon size={14} /> Import from Figma
+                                    </button>
+                                    <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4A4A4A] bg-[#272727] text-xs text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors">
+                                        <Upload size={14} /> Upload a Project
+                                    </button>
+                                    <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#4A4A4A] bg-[#272727] text-xs text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors">
+                                        <Globe size={14} /> Landing Page
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
-
-                        <div className="mt-3 flex items-center justify-end px-1">
-                            <button className="text-xs text-emerald-500 hover:text-emerald-400 font-medium">
-                                Upgrade Plan
-                            </button>
-                        </div>
-
-                        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
-                                <Copy size={14} /> Clone a Screenshot
-                            </button>
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
-                                <ImageIcon size={14} /> Import from Figma
-                            </button>
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
-                                <Upload size={14} /> Upload a Project
-                            </button>
-                            <button className="flex items-center gap-2 px-3 py-2 rounded-full border border-zinc-800 bg-zinc-900/50 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors">
-                                <Globe size={14} /> Landing Page
-                            </button>
-                        </div>
-
-                    </div>
+                    )}
                 </div>
             </main>
         </div>
