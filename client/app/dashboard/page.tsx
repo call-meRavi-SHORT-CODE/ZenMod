@@ -107,7 +107,7 @@ export default function DashboardPage() {
                             RA
                         </div>
                         <div className="flex-1 text-left min-w-0">
-                            <div className="text-sm font-medium text-white truncate">ravikrishnaj25@gmail...</div>
+                            <div className="text-base font-medium text-white truncate">ravikrishnaj25@gmail...</div>
                         </div>
                     </button>
                 </div>

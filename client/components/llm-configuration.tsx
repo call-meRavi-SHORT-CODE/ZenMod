@@ -179,7 +179,7 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
 
         {/* Table/List View */}
         {configs.length === 0 ? (
-          <div className="text-center py-16 px-6">
+          <div className="text-center py-16 px-6 font-poppins">
             <div className="inline-flex p-4 rounded-full bg-zinc-800/50 mb-4">
               <Sparkles size={40} className="text-zinc-600" />
             </div>
@@ -194,7 +194,7 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
             </button>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto font-poppins">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#4A4A4A]">
@@ -212,26 +212,26 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
                   return (
                     <tr
                       key={config.id}
-                      className="border-b border-[#4A4A4A] hover:bg-[#353535] transition-colors"
+                      className="border-b border-[#4A4A4A] hover:bg-[#353535] transition-colors font-poppins"
                     >
                       <td className="py-4 px-4">
                         <div>
-                          <p className="text-white font-medium text-sm text-[#A4A4A4]">{config.provider}</p>
-                          <p className={`text-xs text-[#7C7D7D]`}>Active</p>
+                          <p className="text-blue-300 font-medium text-sm">{config.provider}</p>
+                          <p className={`text-xs text-blue-500/60`}>Active</p>
                         </div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
-                          <code className="text-sm font-mono text-[#7C7D7D] bg-[#353535] px-2 py-1 rounded">
+                          <code className="text-sm font-mono text-blue-300 bg-blue-900/20 px-2 py-1 rounded border border-blue-700/30">
                             {config.apiKey}
                           </code>
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <p className="text-sm text-[#A4A4A4]">{config.model}</p>
+                        <p className="text-sm text-blue-300 font-medium">{config.model}</p>
                       </td>
                       <td className="py-4 px-4">
-                        <p className="text-sm text-[#A4A4A4] font-medium">{config.maxTokens.toLocaleString()}</p>
+                        <p className="text-sm text-blue-300 font-medium">{config.maxTokens.toLocaleString()}</p>
                       </td>
                       <td className="py-4 px-4">
                         <span className={`text-xs font-medium px-2 py-1 rounded-full ${
