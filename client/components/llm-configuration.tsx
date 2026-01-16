@@ -150,22 +150,22 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
           <div className="flex items-center justify-between gap-4 py-4 border-b border-[#4A4A4A]">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <span className="text-sm text-[#7C7D7D]">Group by</span>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors text-sm">
+                <span className="text-sm text-white">Group by</span>
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-white hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors text-sm">
                   {groupBy === "provider" ? "🔹 Provider" : "🏗️ Model"}
                   <ChevronDown size={14} />
                 </button>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-[#7C7D7D]">Filter by</span>
+              <span className="text-sm text-white">Filter by</span>
               <div className="relative">
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-[#7C7D7D] appearance-none cursor-pointer hover:bg-[#4A4A4A] focus:outline-none transition-colors text-sm"
+                  className="px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-white appearance-none cursor-pointer hover:bg-[#4A4A4A] focus:outline-none transition-colors text-sm"
                 >
-                  <option value="all">All Providers</option>
+                  <option value="all" className="text-white">All Providers</option>
                   <option value="gemini">Gemini</option>
                   <option value="openai">OpenAI</option>
                   <option value="claude">Claude</option>
