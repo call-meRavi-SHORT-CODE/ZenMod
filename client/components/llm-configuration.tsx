@@ -122,7 +122,7 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
   }
 
   return (
-    <div className={`${isEmbedded ? "" : "min-h-screen bg-[#191919] text-[#A4A4A4]"} p-8`}>
+    <div className={`${isEmbedded ? "" : "min-h-screen bg-[#191919] text-[#A4A4A4]"} px-8 md:px-20 lg:px-32 py-8`}>
       {/* Main Content */}
       <div>
         {/* Header Section */}
@@ -133,9 +133,7 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
               <p className="text-sm text-[#7C7D7D] mt-0.5">Manage your AI provider credentials</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#4A4A4A] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#353535] transition-colors text-sm font-medium">
-                📖 Documentation
-              </button>
+              
               <button
                 onClick={handleAddNew}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#2E2E2E] hover:bg-[#3A3A3A] text-[#E6E6E6] font-semibold transition-all duration-300"
@@ -147,25 +145,25 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
           </div>
 
           {/* Filter & Group Controls */}
-          <div className="flex items-center justify-between gap-4 py-4 border-b border-[#4A4A4A]">
+          <div className="flex items-center justify-between gap-4 py-4">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <span className="text-sm text-[#7C7D7D]">Group by</span>
-                <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors text-sm">
+                <span className="text-sm text-white">Group by</span>
+                <button className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-white hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors text-sm">
                   {groupBy === "provider" ? "🔹 Provider" : "🏗️ Model"}
                   <ChevronDown size={14} />
                 </button>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-[#7C7D7D]">Filter by</span>
+              <span className="text-sm text-white">Filter by</span>
               <div className="relative">
                 <select
                   value={filterBy}
                   onChange={(e) => setFilterBy(e.target.value)}
-                  className="px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-[#7C7D7D] appearance-none cursor-pointer hover:bg-[#4A4A4A] focus:outline-none transition-colors text-sm"
+                  className="px-3 py-1.5 rounded-md bg-[#353535] border border-[#4A4A4A] text-white appearance-none cursor-pointer hover:bg-[#4A4A4A] focus:outline-none transition-colors text-sm"
                 >
-                  <option value="all">All Providers</option>
+                  <option value="all" className="text-white">All Providers</option>
                   <option value="gemini">Gemini</option>
                   <option value="openai">OpenAI</option>
                   <option value="claude">Claude</option>
@@ -184,7 +182,7 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
               <Sparkles size={40} className="text-zinc-600" />
             </div>
             <p className="text-zinc-300 text-lg mb-2 font-medium">No configurations yet</p>
-            <p className="text-zinc-500 mb-6 max-w-md">Create your first LLM provider configuration to get started with your AI setup</p>
+            <p className="text-zinc-500 mb-6 max-w-md mx-auto">Create your first LLM provider configuration to get started with your AI setup</p>
             <button
               onClick={handleAddNew}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-[#2E2E2E] hover:bg-[#3A3A3A] text-[#E6E6E6] font-semibold transition-colors border border-[#4A4A4A]"
@@ -198,12 +196,12 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#4A4A4A]">
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">Provider</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">API Key</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">Model</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">Max Tokens</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">Reasoning</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-white">Actions</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Provider</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">API Key</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Model</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Max Tokens</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Reasoning</th>
+                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -214,39 +212,45 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
                       key={config.id}
                       className="border-b border-[#4A4A4A] hover:bg-[#353535] transition-colors font-poppins"
                     >
+                      {/* Provider column (keep original color) */}
                       <td className="py-4 px-4">
                         <div>
                           <p className="text-blue-300 font-medium text-sm">{config.provider}</p>
                           <p className={`text-xs text-blue-500/60`}>Active</p>
                         </div>
                       </td>
+                      {/* API Key column (grey) */}
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
-                          <code className="text-sm font-mono text-blue-300 bg-blue-900/20 px-2 py-1 rounded border border-blue-700/30">
+                          <code className="text-sm font-mono text-white bg-[#3A3A3A]/40 px-2 py-1 rounded border border-[#4A4A4A]/50">
                             {config.apiKey}
                           </code>
                         </div>
                       </td>
+                      {/* Model column (blue matching dark bg) */}
                       <td className="py-4 px-4">
-                        <p className="text-sm text-blue-300 font-medium">{config.model}</p>
+                        <p className="text-sm text-[#5B9FD8] font-medium">{config.model}</p>
                       </td>
+                      {/* Max Tokens column (white) */}
                       <td className="py-4 px-4">
-                        <p className="text-sm text-blue-300 font-medium">{config.maxTokens.toLocaleString()}</p>
+                        <p className="text-sm text-white font-medium">{config.maxTokens.toLocaleString()}</p>
                       </td>
+                      {/* Reasoning column (white) */}
                       <td className="py-4 px-4">
                         <span className={`text-xs font-medium px-2 py-1 rounded-full ${
                           config.extendedReasoning
-                            ? "bg-[#40507A]/20 text-[#40507A] border border-[#40507A]/30"
-                            : "bg-[#353535] text-[#7C7D7D] border border-[#4A4A4A]"
+                            ? "bg-[#40507A]/20 text-white border border-[#40507A]/30"
+                            : "bg-[#353535] text-white border border-[#4A4A4A]"
                         }`}>
                           {config.extendedReasoning ? "✓ Enabled" : "Disabled"}
                         </span>
                       </td>
+                      {/* Actions column (white) */}
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => handleEdit(config)}
-                            className="p-2 rounded-lg text-[#E6E6E6] bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
+                            className="p-2 rounded-lg text-white bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
                             title="Edit"
                           >
                             <Edit2 size={16} />
@@ -255,14 +259,14 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
                             onClick={() => {
                               navigator.clipboard.writeText(config.apiKey)
                             }}
-                            className="p-2 rounded-lg text-[#E6E6E6] bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
+                            className="p-2 rounded-lg text-white bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
                             title="Copy"
                           >
                             <Copy size={16} />
                           </button>
                           <button
                             onClick={() => handleDelete(config.id)}
-                            className="p-2 rounded-lg text-[#E6E6E6] bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
+                            className="p-2 rounded-lg text-white bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-colors"
                             title="Delete"
                           >
                             <Trash2 size={16} />
