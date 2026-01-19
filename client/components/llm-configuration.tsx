@@ -199,8 +199,6 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
                   <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Provider</th>
                   <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">API Key</th>
                   <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Model</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Max Tokens</th>
-                  <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Reasoning</th>
                   <th className="text-left py-4 px-4 text-sm font-semibold text-[#6B6B6B]">Actions</th>
                 </tr>
               </thead>
@@ -223,27 +221,13 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
                           <code className="text-sm font-mono text-white bg-[#3A3A3A]/40 px-2 py-1 rounded border border-[#4A4A4A]/50">
-                            {config.apiKey}
+                            {'•'.repeat(16)}
                           </code>
                         </div>
                       </td>
                       {/* Model column (blue matching dark bg) */}
                       <td className="py-4 px-4">
                         <p className="text-sm text-[#5B9FD8] font-medium">{config.model}</p>
-                      </td>
-                      {/* Max Tokens column (white) */}
-                      <td className="py-4 px-4">
-                        <p className="text-sm text-white font-medium">{config.maxTokens.toLocaleString()}</p>
-                      </td>
-                      {/* Reasoning column (white) */}
-                      <td className="py-4 px-4">
-                        <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                          config.extendedReasoning
-                            ? "bg-[#40507A]/20 text-white border border-[#40507A]/30"
-                            : "bg-[#353535] text-white border border-[#4A4A4A]"
-                        }`}>
-                          {config.extendedReasoning ? "✓ Enabled" : "Disabled"}
-                        </span>
                       </td>
                       {/* Actions column (white) */}
                       <td className="py-4 px-4">
@@ -285,179 +269,99 @@ export default function LLMConfiguration({ onClose, isEmbedded = false }: LLMCon
       {/* Modal Dialog */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#272727] border border-[#4A4A4A] rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#121212] border border-[#2A2A2A] rounded-lg w-full max-w-md shadow-2xl">
             {/* Modal Header */}
-            <div className="sticky top-0 bg-[#272727] border-b border-[#4A4A4A] px-8 py-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-white">
-                  {editingId ? "Edit Configuration" : "Create a new key"}
-                </h2>
-                <p className="text-sm text-[#7C7D7D] mt-1">Configure your LLM provider settings</p>
-              </div>
-              <button
-                onClick={handleCancel}
-                className="text-[#7C7D7D] hover:text-[#A4A4A4] transition-colors"
-              >
-                <X size={24} />
-              </button>
+            <div className="px-6 py-5 border-b border-[#2A2A2A] bg-[#0F0F0F]">
+              <h2 className="text-lg font-bold text-white">
+                {editingId ? "Edit Configuration" : "Create a new key"}
+              </h2>
             </div>
 
             {/* Modal Content */}
-            <div className="p-8 space-y-8">
-              {/* Row 1: Provider & Model */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-[#A4A4A4] mb-2.5">
-                    AI Provider <span className="text-[#40507A]">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={formData.provider}
-                      onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#353535] border border-[#4A4A4A] rounded-xl text-[#A4A4A4] appearance-none cursor-pointer hover:border-[#616161] focus:border-[#40507A]/50 focus:outline-none focus:ring-2 focus:ring-[#40507A]/20 transition-all"
-                    >
-                      {providers.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 pointer-events-none" size={18} />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-[#A4A4A4] mb-2.5">
-                    Model
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={formData.model}
-                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                      className="w-full px-4 py-3 bg-[#353535] border border-[#4A4A4A] rounded-xl text-[#A4A4A4] appearance-none cursor-pointer hover:border-[#616161] focus:border-[#40507A]/50 focus:outline-none focus:ring-2 focus:ring-[#40507A]/20 transition-all"
-                    >
-                      {models[formData.provider].map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-zinc-500 pointer-events-none" size={18} />
-                  </div>
+            <div className="p-6 space-y-5 bg-[#0F0F0F]">
+              {/* Key Name Dropdown */}
+              <div>
+                <label className="block text-sm font-medium text-[#A4A4A4] mb-2">
+                  Name your key
+                </label>
+                <div className="relative">
+                  <select
+                    value={formData.provider}
+                    onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
+                    className="w-full px-3 py-2.5 bg-[#121212] border border-[#121212] rounded-lg text-[#A4A4A4] appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#40507A]/20 transition-all text-sm"
+                  >
+                    {providers.map((p) => (
+                      <option key={p} value={p}>
+                        {p} API Key
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#616161] pointer-events-none" size={16} />
                 </div>
               </div>
 
-              {/* Row 2: API Key */}
+              {/* Project Selector */}
               <div>
-                <label className="block text-sm font-semibold text-[#A4A4A4] mb-2.5">
-                  API Key <span className="text-[#40507A]">*</span>
+                <label className="block text-sm font-medium text-[#A4A4A4] mb-2">
+                  Model Name
                 </label>
                 <div className="relative">
-                  <Key className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#616161]" size={18} />
+                  <select
+                    value={formData.model}
+                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                    className="w-full px-3 py-2.5 bg-[#121212] border border-[#121212] rounded-lg text-[#A4A4A4] appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#40507A]/20 transition-all text-sm"
+                  >
+                    {models[formData.provider].map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#616161] pointer-events-none" size={16} />
+                </div>
+              </div>
+
+              {/* API Key Input */}
+              <div>
+                <label className="block text-sm font-medium text-[#A4A4A4] mb-2">
+                  API Key
+                </label>
+                <div className="relative">
+                  <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#616161]" size={16} />
                   <input
                     type={showPassword ? "text" : "password"}
                     value={formData.apiKey}
                     onChange={(e) => setFormData({ ...formData, apiKey: e.target.value })}
                     placeholder={`Paste your ${formData.provider} API key`}
-                    className="w-full pl-12 pr-12 py-3 bg-[#353535] border border-[#4A4A4A] rounded-xl text-[#A4A4A4] placeholder:text-[#636363] hover:border-[#616161] focus:border-[#40507A]/50 focus:outline-none focus:ring-2 focus:ring-[#40507A]/20 transition-all"
+                    className="w-full pl-10 pr-10 py-2.5 bg-[#121212] border border-[#121212] rounded-lg text-[#A4A4A4] placeholder:text-[#636363] focus:outline-none focus:ring-1 focus:ring-[#40507A]/20 transition-all text-sm"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#616161] hover:text-[#A4A4A4] transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#616161] hover:text-[#A4A4A4] transition-colors"
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                <p className="text-xs text-[#7C7D7D] mt-2">🔒 Your key is encrypted and never stored in plain text</p>
-              </div>
-
-              {/* Row 3: Token Settings */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-[#A4A4A4] mb-2.5">
-                    Max Tokens
-                  </label>
-                  <div className="relative">
-                    <Database className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#616161]" size={18} />
-                    <input
-                      type="number"
-                      value={formData.maxTokens}
-                      onChange={(e) => setFormData({ ...formData, maxTokens: parseInt(e.target.value) || 0 })}
-                      className="w-full pl-12 pr-4 py-3 bg-[#353535] border border-[#4A4A4A] rounded-xl text-[#A4A4A4] hover:border-[#616161] focus:border-[#40507A]/50 focus:outline-none focus:ring-2 focus:ring-[#40507A]/20 transition-all"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-[#A4A4A4] mb-2.5">
-                    Reasoning Budget
-                  </label>
-                  <div className="relative">
-                    <Sparkles className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#616161]" size={18} />
-                    <input
-                      type="number"
-                      value={formData.reasoningBudgetTokens}
-                      onChange={(e) =>
-                        setFormData({ ...formData, reasoningBudgetTokens: parseInt(e.target.value) || 0 })
-                      }
-                      className="w-full pl-12 pr-4 py-3 bg-[#353535] border border-[#4A4A4A] rounded-xl text-[#A4A4A4] hover:border-[#616161] focus:border-[#40507A]/50 focus:outline-none focus:ring-2 focus:ring-[#40507A]/20 transition-all"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-[#4A4A4A]" />
-
-              {/* Extended Reasoning */}
-              <div className="flex items-center justify-between gap-4 bg-[#353535]/50 rounded-xl p-4 border border-[#4A4A4A]">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-[#A4A4A4] flex items-center gap-2">
-                    <Sparkles size={18} className="text-[#40507A]" />
-                    Extended Reasoning (Thinking)
-                  </h3>
-                  <p className="text-sm text-[#7C7D7D] mt-1">Enable advanced reasoning capabilities</p>
-                </div>
-                <button
-                  onClick={() =>
-                    setFormData({ ...formData, extendedReasoning: !formData.extendedReasoning })
-                  }
-                  className={`relative inline-flex h-8 w-14 flex-shrink-0 rounded-full transition-all duration-300 ${
-                    formData.extendedReasoning
-                      ? "bg-[#40507A] shadow-lg shadow-[#40507A]/30"
-                      : "bg-[#353535]"
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-md transition-all duration-300 ${
-                      formData.extendedReasoning ? "translate-x-7" : "translate-x-0.5"
-                    }`}
-                  />
-                </button>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="sticky bottom-0 bg-[#272727] border-t border-[#4A4A4A] px-8 py-4 flex gap-3 justify-end">
+            <div className="px-6 py-4 border-t border-[#2A2A2A] flex gap-2 justify-end bg-[#0F0F0F]">
               <button
                 onClick={handleCancel}
-                className="px-6 py-2.5 rounded-lg border border-[#4A4A4A] text-[#A4A4A4] font-semibold hover:bg-[#353535] transition-all duration-300"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCancel}
-                className="px-6 py-2.5 rounded-lg border border-[#4A4A4A] text-[#E6E6E6] font-semibold bg-[#2E2E2E] hover:bg-[#3A3A3A] transition-all duration-300"
+                className="px-4 py-2 rounded-lg border border-[#2A2A2A] text-[#A4A4A4] font-medium hover:bg-[#1A1A1A] transition-all text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-6 py-2.5 rounded-lg bg-[#2E2E2E] hover:bg-[#3A3A3A] text-[#E6E6E6] font-semibold transition-all duration-300"
+                className="px-4 py-2 rounded-lg bg-[#2A2A2A] hover:bg-[#353535] text-[#E6E6E6] font-medium transition-all text-sm"
               >
-                {editingId ? "Update Provider" : "Create key"}
+                {editingId ? "Update" : "Create key"}
               </button>
-            </div> {/* End Modal Footer */}
-          </div> {/* End Modal Content */}
+            </div>
+          </div>
         </div>
       )}
     </div>
