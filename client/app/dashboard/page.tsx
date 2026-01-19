@@ -3,6 +3,7 @@
 import { useState } from "react"
 import "./dashboard.css"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
     Search,
     FolderOpen,
@@ -19,10 +20,12 @@ import {
     MoreHorizontal,
     MessageSquare,
     Gift,
+    Send,
 } from "lucide-react"
 import LLMConfiguration from "@/components/llm-configuration"
 
 export default function DashboardPage() {
+    const router = useRouter()
     const [activeTab, setActiveTab] = useState("new-chat")
 
     const sidebarItems = [
@@ -42,6 +45,26 @@ export default function DashboardPage() {
         "Subscription page clone",
         "Inspiro login clone",
     ]
+
+    // State for chat input
+    const [userInput, setUserInput] = useState("");
+
+    // Handler for submit (Enter or button)
+    const handleSubmit = () => {
+        if (userInput.trim()) {
+            // Navigate to the helloworld page
+            router.push(`/helloworld`)
+        }
+    };
+
+    // Handler for Enter key in textarea
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSubmit();
+        }
+    };
+
 
     return (
         <div className="flex h-screen bg-[#0F0F0F] text-[#A4A4A4] font-sans overflow-hidden">
@@ -146,6 +169,9 @@ export default function DashboardPage() {
                                     <textarea
                                         className="w-full bg-transparent text-[#A4A4A4] placeholder:text-[#636363] px-4 py-4 min-h-[120px] resize-none outline-none text-base"
                                         placeholder="Ask ZenMod to build..."
+                                        value={userInput}
+                                        onChange={e => setUserInput(e.target.value)}
+                                        onKeyDown={handleKeyDown}
                                     />
 
                                     <div className="px-3 pb-3 flex items-center justify-between">
@@ -159,7 +185,10 @@ export default function DashboardPage() {
                                             </button>
                                         </div>
 
-                                        <button className="p-2 rounded-lg bg-[#353535] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors">
+                                        <button
+                                            className="p-2 rounded-lg bg-[#353535] text-[#7C7D7D] hover:text-[#A4A4A4] hover:bg-[#4A4A4A] transition-colors"
+                                            onClick={handleSubmit}
+                                        >
                                             <ArrowUp size={18} />
                                         </button>
                                     </div>
