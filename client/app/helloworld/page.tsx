@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { MessageSquare, Layout, Link2, Database, Route, Settings, Plus, Sparkles, ChevronDown, Calendar, MoreHorizontal, ArrowLeft, ArrowRight, Eye, Code, ExternalLink, Share2, Monitor, Globe, RotateCcw } from "lucide-react"
 import { useRouter } from "next/navigation"
+import MonacoEditorView from "@/components/monaco-editor-view"
 
 export default function HelloworldPage() {
     const router = useRouter()
     const userMessage = ""
     const [followUpInput, setFollowUpInput] = useState("")
+    const [showMonacoEditor, setShowMonacoEditor] = useState(false)
 
     const handleFollowUp = () => {
         if (followUpInput.trim()) {
@@ -180,7 +182,7 @@ export default function HelloworldPage() {
                             <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]">
                                 <Eye className="w-4 h-4" />
                             </button>
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]">
+                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(true)}>
                                 <Code className="w-4 h-4" />
                             </button>
                         </div>
@@ -250,6 +252,7 @@ export default function HelloworldPage() {
             </div>
 
             
+            {showMonacoEditor && <MonacoEditorView onClose={() => setShowMonacoEditor(false)} />}
         </div>
     )
 }
