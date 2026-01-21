@@ -72,15 +72,53 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
     const [showNewFileInput, setShowNewFileInput] = useState(false)
     const [selectedLanguage, setSelectedLanguage] = useState("javascript")
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["root"]))
+    const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null)
+    const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
+    const [isCreatingFile, setIsCreatingFile] = useState(false)
+    const [isCreatingFolder, setIsCreatingFolder] = useState(false)
+    const [selectedNodeForContext, setSelectedNodeForContext] = useState<FileTreeNode | null>(null)
+
+    // Map file extensions to Monaco editor languages
+    const getLanguageFromExtension = (filename: string): string => {
+        const ext = filename.split(".").pop()?.toLowerCase() || ""
+        const extensionMap: { [key: string]: string } = {
+            js: "javascript",
+            jsx: "javascript",
+            ts: "typescript",
+            tsx: "typescript",
+            py: "python",
+            html: "html",
+            htm: "html",
+            css: "css",
+            scss: "scss",
+            json: "json",
+            md: "markdown",
+            sql: "sql",
+            java: "java",
+            cpp: "cpp",
+            c: "c",
+            cs: "csharp",
+            php: "php",
+            rs: "rust",
+            go: "go",
+            yaml: "yaml",
+            yml: "yaml",
+            xml: "xml",
+            sh: "shell",
+        }
+        return extensionMap[ext] || "plaintext"
+    }
 
     const activeFile = files.find((f) => f.id === activeFileId)
 
     const handleCreateFile = () => {
         if (newFileName.trim()) {
+            const language = getLanguageFromExtension(newFileName)
             const newFile: FileTab = {
                 id: Date.now().toString(),
                 name: newFileName,
-                language: selectedLanguage,
+                language: language,
                 content: "",
             }
             setFiles([...files, newFile])
@@ -93,15 +131,36 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                 fileId: newFile.id,
             }
             
-            const updatedTree = [...fileTree]
-            if (updatedTree[0]?.children) {
-                updatedTree[0].children.push(newNode)
+            const addToTree = (nodes: FileTreeNode[]): FileTreeNode[] => {
+                return nodes.map((node) => {
+                    // If a node is selected and it's a folder, add to it
+                    if (selectedNodeForContext && node.id === selectedNodeForContext.id && node.type === "folder") {
+                        return {
+                            ...node,
+                            children: [...(node.children || []), newNode],
+                        }
+                    }
+                    // Recursively search in children
+                    if (node.children) {
+                        return {
+                            ...node,
+                            children: addToTree(node.children),
+                        }
+                    }
+                    return node
+                })
             }
-            setFileTree(updatedTree)
+
+            const updatedTree = selectedNodeForContext && selectedNodeForContext.type === "folder" 
+                ? addToTree(fileTree)
+                : [...fileTree, newNode]
             
+            setFileTree(updatedTree)
             setActiveFileId(newFile.id)
             setNewFileName("")
             setShowNewFileInput(false)
+            setIsCreatingFile(false)
+            setSelectedNodeForContext(null)
         }
     }
 
@@ -136,16 +195,160 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
         setExpandedFolders(newExpanded)
     }
 
+    const getPathForNode = (nodeId: string): string => {
+        const buildPath = (nodes: FileTreeNode[], path: string[] = []): string | null => {
+            for (const node of nodes) {
+                if (node.id === nodeId) {
+                    return [...path, node.name].join("/")
+                }
+                if (node.children) {
+                    const result = buildPath(node.children, [...path, node.name])
+                    if (result) return result
+                }
+            }
+            return null
+        }
+        return buildPath(fileTree) || ""
+    }
+
+    const handleCreateFolder = () => {
+        if (newFileName.trim()) {
+            const folderName = newFileName
+            const newFolder: FileTreeNode = {
+                id: Date.now().toString(),
+                name: folderName,
+                type: "folder",
+                children: [],
+            }
+
+            const addToTree = (nodes: FileTreeNode[]): FileTreeNode[] => {
+                return nodes.map((node) => {
+                    // If a node is selected and it's a folder, add to it
+                    if (selectedNodeForContext && node.id === selectedNodeForContext.id && node.type === "folder") {
+                        return {
+                            ...node,
+                            children: [...(node.children || []), newFolder],
+                        }
+                    }
+                    // Recursively search in children
+                    if (node.children) {
+                        return {
+                            ...node,
+                            children: addToTree(node.children),
+                        }
+                    }
+                    return node
+                })
+            }
+
+            // If a folder is selected, add inside it; otherwise add to root
+            const updatedTree = selectedNodeForContext && selectedNodeForContext.type === "folder"
+                ? addToTree(fileTree)
+                : [...fileTree, newFolder]
+
+            setFileTree(updatedTree)
+            setNewFileName("")
+            setIsCreatingFolder(false)
+            setSelectedNodeForContext(null)
+        }
+    }
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text)
+    }
+
+    const moveNodeInTree = (nodes: FileTreeNode[], nodeIdToMove: string, targetFolderId: string): FileTreeNode[] => {
+        let nodeToMove: FileTreeNode | null = null
+
+        // Find and remove the node
+        const removeNode = (nodes: FileTreeNode[]): FileTreeNode[] => {
+            return nodes.filter((node) => {
+                if (node.id === nodeIdToMove) {
+                    nodeToMove = node
+                    return false
+                }
+                if (node.children) {
+                    node.children = removeNode(node.children)
+                }
+                return true
+            })
+        }
+
+        // Add node to target folder
+        const addToTarget = (nodes: FileTreeNode[]): FileTreeNode[] => {
+            return nodes.map((node) => {
+                if (node.id === targetFolderId && node.type === "folder" && nodeToMove) {
+                    return {
+                        ...node,
+                        children: [...(node.children || []), nodeToMove],
+                    }
+                }
+                if (node.children) {
+                    return {
+                        ...node,
+                        children: addToTarget(node.children),
+                    }
+                }
+                return node
+            })
+        }
+
+        if (nodeIdToMove === targetFolderId) return nodes
+        const treeAfterRemove = removeNode(nodes)
+        return nodeToMove ? addToTarget(treeAfterRemove) : treeAfterRemove
+    }
+
+    const handleDragStart = (e: React.DragEvent, nodeId: string) => {
+        setDraggedNodeId(nodeId)
+        e.dataTransfer.effectAllowed = "move"
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+    }
+
+    const handleDrop = (e: React.DragEvent, targetFolderId: string, node: FileTreeNode) => {
+        e.preventDefault()
+        if (draggedNodeId && node.type === "folder") {
+            setFileTree(moveNodeInTree(fileTree, draggedNodeId, targetFolderId))
+            setDraggedNodeId(null)
+            setDragOverFolderId(null)
+            setExpandedFolders(new Set([...expandedFolders, targetFolderId]))
+        }
+    }
+
     const renderFileTree = (nodes: FileTreeNode[], depth = 0) => {
         return nodes.map((node) => (
-            <div key={node.id}>
+            <div 
+                key={node.id} 
+                data-file-node={node.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, node.id)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, node.id, node)}
+                onDragEnter={() => node.type === "folder" && setDragOverFolderId(node.id)}
+                onDragLeave={() => setDragOverFolderId(null)}
+            >
                 <div
                     className={`flex items-center gap-1 px-2 py-1.5 text-sm cursor-pointer hover:bg-[#2A2A2A] transition-colors ${
                         node.type === "file" && activeFileId === node.fileId
                             ? "bg-[#2A2A2A] text-[#3D5FFF]"
                             : "text-[#A4A4A4]"
+                    } ${
+                        dragOverFolderId === node.id && node.type === "folder"
+                            ? "bg-[#353535] border-l-2 border-[#3D5FFF]"
+                            : ""
+                    } ${
+                        draggedNodeId === node.id ? "opacity-50" : ""
                     }`}
                     style={{ paddingLeft: `${8 + depth * 16}px` }}
+                    onContextMenu={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setSelectedNodeForContext(node)
+                        setContextMenu({ x: e.clientX, y: e.clientY })
+                    }}
                 >
                     {node.type === "folder" ? (
                         <>
@@ -216,19 +419,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-            <div className="bg-[#1E1E1E] rounded-lg shadow-2xl w-11/12 h-5/6 flex flex-col border border-[#353535]">
-                {/* Header */}
-                <div className="flex items-center justify-between h-12 border-b border-[#2A2A2A] px-4">
-                    <h2 className="text-white font-semibold">Code Editor</h2>
-                    <button
-                        onClick={onClose}
-                        className="p-1 hover:bg-[#2A2A2A] rounded transition-colors"
-                    >
-                        <X className="w-5 h-5 text-[#A4A4A4]" />
-                    </button>
-                </div>
-
+        <div className="w-full h-full bg-[#1E1E1E] flex flex-col border-0">
                 {/* Main Content Area */}
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Sidebar - File Manager */}
@@ -239,24 +430,139 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                 <Folder className="w-4 h-4" />
                                 Files
                             </span>
-                            <button
-                                onClick={() => setShowNewFileInput(true)}
-                                className="p-1 hover:bg-[#2A2A2A] rounded transition-colors"
-                            >
-                                <Plus className="w-3.5 h-3.5 text-[#A4A4A4]" />
-                            </button>
                         </div>
 
                         {/* File Tree */}
-                        <div className="flex-1 overflow-y-auto">
+                        <div
+                            className="flex-1 overflow-y-auto"
+                            onContextMenu={(e) => {
+                                // Only show context menu for right-click on empty area
+                                if ((e.target as HTMLElement).closest('[data-file-node]') === null) {
+                                    e.preventDefault()
+                                    setSelectedNodeForContext(null)
+                                    setContextMenu({ x: e.clientX, y: e.clientY })
+                                }
+                            }}
+                        >
                             <div className="py-2">
                                 {renderFileTree(fileTree)}
+                                
+                                {/* Inline File Creation Input */}
+                                {isCreatingFile && (
+                                    <div className="px-2 py-1.5">
+                                        <input
+                                            type="text"
+                                            placeholder="filename.js"
+                                            value={newFileName}
+                                            onChange={(e) => setNewFileName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    handleCreateFile()
+                                                }
+                                                if (e.key === "Escape") {
+                                                    setIsCreatingFile(false)
+                                                    setNewFileName("")
+                                                }
+                                            }}
+                                            autoFocus
+                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#3D5FFF] focus:border-[#5A7FFF]"
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Inline Folder Creation Input */}
+                                {isCreatingFolder && (
+                                    <div className="px-2 py-1.5">
+                                        <input
+                                            type="text"
+                                            placeholder="foldername"
+                                            value={newFileName}
+                                            onChange={(e) => setNewFileName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === "Enter") {
+                                                    handleCreateFolder()
+                                                }
+                                                if (e.key === "Escape") {
+                                                    setIsCreatingFolder(false)
+                                                    setNewFileName("")
+                                                    setSelectedNodeForContext(null)
+                                                }
+                                            }}
+                                            autoFocus
+                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#3D5FFF] focus:border-[#5A7FFF]"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        {/* Context Menu */}
+                        {contextMenu && (
+                            <div
+                                className="fixed bg-[#2A2A2A] border border-[#353535] rounded shadow-lg z-50 py-1 min-w-[180px]"
+                                style={{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }}
+                                onClick={() => setContextMenu(null)}
+                            >
+                                <button
+                                    onClick={() => {
+                                        setIsCreatingFile(true)
+                                        setContextMenu(null)
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-[#A4A4A4] hover:bg-[#353535] hover:text-white transition-colors"
+                                >
+                                    New file...
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setIsCreatingFolder(true)
+                                        setContextMenu(null)
+                                    }}
+                                    className="w-full text-left px-4 py-2 text-sm text-[#A4A4A4] hover:bg-[#353535] hover:text-white transition-colors"
+                                >
+                                    New folder...
+                                </button>
+                                {selectedNodeForContext && (
+                                    <>
+                                        <div className="border-t border-[#353535] my-1"></div>
+                                        <button
+                                            onClick={() => {
+                                                const path = getPathForNode(selectedNodeForContext.id)
+                                                copyToClipboard(path)
+                                                setContextMenu(null)
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-[#A4A4A4] hover:bg-[#353535] hover:text-white transition-colors"
+                                        >
+                                            Copy path
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const path = getPathForNode(selectedNodeForContext.id)
+                                                const relativePath = path.replace(/^src\//, "")
+                                                copyToClipboard(relativePath)
+                                                setContextMenu(null)
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-[#A4A4A4] hover:bg-[#353535] hover:text-white transition-colors"
+                                        >
+                                            Copy relative path
+                                        </button>
+                                        <div className="border-t border-[#353535] my-1"></div>
+                                        <button
+                                            onClick={() => {
+                                                handleDeleteFile(selectedNodeForContext.id)
+                                                setContextMenu(null)
+                                            }}
+                                            className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#353535] hover:text-red-300 transition-colors"
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right Side - Editor */}
-                    <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col" onClick={() => setContextMenu(null)}>
                         {/* File Tabs */}
                         <div className="h-10 border-b border-[#2A2A2A] flex items-center gap-1 px-2 bg-[#252525] overflow-x-auto">
                             {files.map((file) => (
@@ -285,59 +591,15 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                             ))}
                         </div>
 
-                        {/* New File Input */}
-                        {showNewFileInput && (
-                            <div className="h-12 border-b border-[#2A2A2A] bg-[#2A2A2A] flex items-center gap-2 px-4">
-                                <input
-                                    type="text"
-                                    placeholder="filename.js"
-                                    value={newFileName}
-                                    onChange={(e) => setNewFileName(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter") handleCreateFile()
-                                        if (e.key === "Escape") {
-                                            setShowNewFileInput(false)
-                                            setNewFileName("")
-                                        }
-                                    }}
-                                    autoFocus
-                                    className="flex-1 bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#3D5FFF]"
-                                />
-
-                                <select
-                                    value={selectedLanguage}
-                                    onChange={(e) => setSelectedLanguage(e.target.value)}
-                                    className="bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#3D5FFF]"
-                                >
-                                    {LANGUAGE_OPTIONS.map((lang) => (
-                                        <option key={lang.value} value={lang.value}>
-                                            {lang.label}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                <button
-                                    onClick={handleCreateFile}
-                                    className="px-3 py-1 bg-[#3D5FFF] text-white text-sm rounded hover:bg-[#5A7FFF] transition-colors"
-                                >
-                                    Create
-                                </button>
-
-                                <button
-                                    onClick={() => {
-                                        setShowNewFileInput(false)
-                                        setNewFileName("")
-                                    }}
-                                    className="px-2 py-1 hover:bg-[#3D3D3D] rounded transition-colors"
-                                >
-                                    <X className="w-4 h-4 text-[#A4A4A4]" />
-                                </button>
-                            </div>
-                        )}
-
                         {/* Editor Tools & Language Selector */}
                         {activeFile && (
                             <div className="h-8 border-b border-[#2A2A2A] bg-[#2A2A2A] flex items-center px-4 gap-4">
+                                <div className="flex items-center gap-2 ml-auto">
+                                    <span className="text-xs text-[#7C7D7D]">
+                                        Lines: {activeFile.content.split("\n").length}
+                                    </span>
+                                </div>
+
                                 <div className="flex items-center gap-2">
                                     <span className="text-xs text-[#7C7D7D]">Language:</span>
                                     <select
@@ -351,12 +613,6 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                             </option>
                                         ))}
                                     </select>
-                                </div>
-
-                                <div className="flex items-center gap-2 ml-auto">
-                                    <span className="text-xs text-[#7C7D7D]">
-                                        Lines: {activeFile.content.split("\n").length}
-                                    </span>
                                 </div>
                             </div>
                         )}
@@ -409,7 +665,6 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     )
 }

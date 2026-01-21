@@ -1,15 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { MessageSquare, Layout, Link2, Database, Route, Settings, Plus, Sparkles, ChevronDown, Calendar, MoreHorizontal, ArrowLeft, ArrowRight, Eye, Code, ExternalLink, Share2, Monitor, Globe, RotateCcw } from "lucide-react"
+import { MessageSquare, Layout, Link2, Database, Route, Settings, Plus, Sparkles, ChevronDown, Calendar, MoreHorizontal, ArrowLeft, ArrowRight, Eye, Code, ExternalLink, Share2, Monitor, Globe, RotateCcw, ChevronUp } from "lucide-react"
 import { useRouter } from "next/navigation"
 import MonacoEditorView from "@/components/monaco-editor-view"
+import TerminalView from "@/components/terminal-view"
 
 export default function HelloworldPage() {
     const router = useRouter()
     const userMessage = ""
     const [followUpInput, setFollowUpInput] = useState("")
-    const [showMonacoEditor, setShowMonacoEditor] = useState(false)
+    const [showMonacoEditor, setShowMonacoEditor] = useState(true)
+    const [terminalCollapsed, setTerminalCollapsed] = useState(false)
+    const [dividerPos, setDividerPos] = useState(50)
+    const [isDragging, setIsDragging] = useState(false)
 
     const handleFollowUp = () => {
         if (followUpInput.trim()) {
@@ -17,8 +21,26 @@ export default function HelloworldPage() {
         }
     }
 
+    const handleMouseDown = () => {
+        setIsDragging(true)
+    }
+
+    const handleMouseUp = () => {
+        setIsDragging(false)
+    }
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDragging) return
+        const container = e.currentTarget
+        const rect = container.getBoundingClientRect()
+        const newPos = ((e.clientY - rect.top) / rect.height) * 100
+        if (newPos > 20 && newPos < 85) {
+            setDividerPos(newPos)
+        }
+    }
+
     return (
-        <div className="min-h-screen bg-[#0F0F0F] text-[#A4A4A4] flex flex-col">
+        <div className="h-screen bg-[#0F0F0F] text-[#A4A4A4] flex flex-col overflow-hidden">
             {/* Top Header */}
             <header className="h-12 border-b border-[#2A2A2A] flex items-center justify-between px-4">
                 <div className="flex items-center gap-3">
@@ -172,14 +194,14 @@ export default function HelloworldPage() {
                 </div>
 
                 {/* Main Preview/Editor Area */}
-                <div className="flex-1 bg-[#0F0F0F] flex flex-col">
+                <div className="flex-1 bg-[#0F0F0F] flex flex-col overflow-hidden">
                     {/* Editor Toolbar */}
-                    <div className="h-10 border-b border-[#2A2A2A] flex items-center justify-between px-4">
+                    <div className="h-10 border-b border-[#2A2A2A] flex items-center justify-between px-4 flex-shrink-0">
                         <div className="flex items-center gap-2">
                             <button className="p-1 hover:bg-[#1A1A1A] rounded">
                                 <ArrowLeft className="w-4 h-4" />
                             </button>
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]">
+                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(false)}>
                                 <Eye className="w-4 h-4" />
                             </button>
                             <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(true)}>
@@ -232,8 +254,12 @@ export default function HelloworldPage() {
 
                         
                         <div className="flex items-center gap-2">
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded">
-                                <Code className="w-4 h-4" />
+                            {/*terminal*/}
+                            <button 
+                                className="p-1 hover:bg-[#1A1A1A] rounded"
+                                onClick={() => setTerminalCollapsed(!terminalCollapsed)}
+                            >
+                                <ChevronUp className={`w-4 h-4 transition-transform ${terminalCollapsed ? 'rotate-180' : ''}`} />
                             </button>
                             <button className="p-1 hover:bg-[#1A1A1A] rounded">
                                 <MoreHorizontal className="w-4 h-4" />
@@ -241,18 +267,46 @@ export default function HelloworldPage() {
                         </div>
                     </div>
 
-                    {/* Empty Preview Area */}
-                    <div className="flex-1 bg-[#0F0F0F] flex items-center justify-center">
-                        <div className="text-center">
-                            <h1 className="text-4xl font-bold text-[#E6E6E6] mb-2">helloworld</h1>
-                            <p className="text-[#7C7D7D]">{userMessage}</p>
+                    {/* Preview or Editor Area with Draggable Terminal */}
+                    <div 
+                        className="flex-1 overflow-hidden flex flex-col bg-[#0F0F0F]"
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}
+                    >
+                        {/* Main Preview/Editor Panel */}
+                        <div style={{ flex: `0 0 ${showMonacoEditor && !terminalCollapsed ? dividerPos + '%' : '100%'}`, minHeight: 0 }} className="overflow-auto bg-[#0F0F0F]">
+                            {!showMonacoEditor ? (
+                                <div className="h-full bg-[#0F0F0F] flex items-center justify-center">
+                                    <div className="text-center">
+                                        <h1 className="text-4xl font-bold text-[#E6E6E6] mb-2">helloworld</h1>
+                                        <p className="text-[#7C7D7D]">{userMessage}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <MonacoEditorView onClose={() => setShowMonacoEditor(false)} />
+                            )}
                         </div>
+
+                        {/* Draggable Divider - Only show when in editor AND terminal is open */}
+                        {showMonacoEditor && !terminalCollapsed && (
+                            <div
+                                onMouseDown={handleMouseDown}
+                                className={`h-1 bg-[#2A2A2A] hover:bg-[#3D5FFF] transition-colors cursor-row-resize flex-shrink-0 ${isDragging ? 'bg-[#3D5FFF]' : ''}`}
+                            />
+                        )}
+
+                        {/* Terminal Panel - Only show when in editor AND terminal is open */}
+                        {showMonacoEditor && !terminalCollapsed && (
+                            <div style={{ flex: `0 0 ${100 - dividerPos + '%'}`, minHeight: 0 }} className="overflow-hidden bg-[#0F0F0F]">
+                                <TerminalView onClose={() => setTerminalCollapsed(true)} />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
-            
-            {showMonacoEditor && <MonacoEditorView onClose={() => setShowMonacoEditor(false)} />}
+
         </div>
     )
 }
