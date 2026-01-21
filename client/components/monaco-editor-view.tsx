@@ -72,6 +72,8 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
     const [showNewFileInput, setShowNewFileInput] = useState(false)
     const [selectedLanguage, setSelectedLanguage] = useState("javascript")
     const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["root"]))
+    const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null)
+    const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null)
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null)
     const [isCreatingFile, setIsCreatingFile] = useState(false)
     const [isCreatingFolder, setIsCreatingFolder] = useState(false)
@@ -255,14 +257,90 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
         navigator.clipboard.writeText(text)
     }
 
+    const moveNodeInTree = (nodes: FileTreeNode[], nodeIdToMove: string, targetFolderId: string): FileTreeNode[] => {
+        let nodeToMove: FileTreeNode | null = null
+
+        // Find and remove the node
+        const removeNode = (nodes: FileTreeNode[]): FileTreeNode[] => {
+            return nodes.filter((node) => {
+                if (node.id === nodeIdToMove) {
+                    nodeToMove = node
+                    return false
+                }
+                if (node.children) {
+                    node.children = removeNode(node.children)
+                }
+                return true
+            })
+        }
+
+        // Add node to target folder
+        const addToTarget = (nodes: FileTreeNode[]): FileTreeNode[] => {
+            return nodes.map((node) => {
+                if (node.id === targetFolderId && node.type === "folder" && nodeToMove) {
+                    return {
+                        ...node,
+                        children: [...(node.children || []), nodeToMove],
+                    }
+                }
+                if (node.children) {
+                    return {
+                        ...node,
+                        children: addToTarget(node.children),
+                    }
+                }
+                return node
+            })
+        }
+
+        if (nodeIdToMove === targetFolderId) return nodes
+        const treeAfterRemove = removeNode(nodes)
+        return nodeToMove ? addToTarget(treeAfterRemove) : treeAfterRemove
+    }
+
+    const handleDragStart = (e: React.DragEvent, nodeId: string) => {
+        setDraggedNodeId(nodeId)
+        e.dataTransfer.effectAllowed = "move"
+    }
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = "move"
+    }
+
+    const handleDrop = (e: React.DragEvent, targetFolderId: string, node: FileTreeNode) => {
+        e.preventDefault()
+        if (draggedNodeId && node.type === "folder") {
+            setFileTree(moveNodeInTree(fileTree, draggedNodeId, targetFolderId))
+            setDraggedNodeId(null)
+            setDragOverFolderId(null)
+            setExpandedFolders(new Set([...expandedFolders, targetFolderId]))
+        }
+    }
+
     const renderFileTree = (nodes: FileTreeNode[], depth = 0) => {
         return nodes.map((node) => (
-            <div key={node.id} data-file-node={node.id}>
+            <div 
+                key={node.id} 
+                data-file-node={node.id}
+                draggable
+                onDragStart={(e) => handleDragStart(e, node.id)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, node.id, node)}
+                onDragEnter={() => node.type === "folder" && setDragOverFolderId(node.id)}
+                onDragLeave={() => setDragOverFolderId(null)}
+            >
                 <div
                     className={`flex items-center gap-1 px-2 py-1.5 text-sm cursor-pointer hover:bg-[#2A2A2A] transition-colors ${
                         node.type === "file" && activeFileId === node.fileId
                             ? "bg-[#2A2A2A] text-[#3D5FFF]"
                             : "text-[#A4A4A4]"
+                    } ${
+                        dragOverFolderId === node.id && node.type === "folder"
+                            ? "bg-[#353535] border-l-2 border-[#3D5FFF]"
+                            : ""
+                    } ${
+                        draggedNodeId === node.id ? "opacity-50" : ""
                     }`}
                     style={{ paddingLeft: `${8 + depth * 16}px` }}
                     onContextMenu={(e) => {
@@ -342,17 +420,6 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
 
     return (
         <div className="w-full h-full bg-[#1E1E1E] flex flex-col border-0">
-                {/* Header */}
-                <div className="flex items-center justify-between h-12 border-b border-[#2A2A2A] px-4">
-                    <h2 className="text-white font-semibold">Code Editor</h2>
-                    <button
-                        onClick={onClose}
-                        className="p-1 hover:bg-[#2A2A2A] rounded transition-colors"
-                    >
-                        <X className="w-5 h-5 text-[#A4A4A4]" />
-                    </button>
-                </div>
-
                 {/* Main Content Area */}
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Sidebar - File Manager */}
