@@ -341,8 +341,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
     }
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-            <div className="bg-[#1E1E1E] rounded-lg shadow-2xl w-11/12 h-5/6 flex flex-col border border-[#353535]">
+        <div className="w-full h-full bg-[#1E1E1E] flex flex-col border-0">
                 {/* Header */}
                 <div className="flex items-center justify-between h-12 border-b border-[#2A2A2A] px-4">
                     <h2 className="text-white font-semibold">Code Editor</h2>
@@ -497,27 +496,8 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
 
                     {/* Right Side - Editor */}
                     <div className="flex-1 flex flex-col" onClick={() => setContextMenu(null)}>
-
-                        {/* Editor Toolbar: Language Selector + File Tabs + Line Count */}
-                        <div className="h-10 border-b border-[#2A2A2A] flex items-center px-2 bg-[#252525] overflow-x-auto">
-                            {/* Language Selector */}
-                            {activeFile && (
-                                <div className="flex items-center gap-2 mr-4">
-                                    <span className="text-xs text-[#7C7D7D]">Language:</span>
-                                    <select
-                                        value={activeFile.language}
-                                        onChange={(e) => handleLanguageChange(e.target.value)}
-                                        className="bg-[#1E1E1E] text-white text-xs px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#3D5FFF]"
-                                    >
-                                        {LANGUAGE_OPTIONS.map((lang) => (
-                                            <option key={lang.value} value={lang.value}>
-                                                {lang.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            )}
-                            {/* File Tabs */}
+                        {/* File Tabs */}
+                        <div className="h-10 border-b border-[#2A2A2A] flex items-center gap-1 px-2 bg-[#252525] overflow-x-auto">
                             {files.map((file) => (
                                 <div
                                     key={file.id}
@@ -542,15 +522,33 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                     )}
                                 </div>
                             ))}
-                            {/* Line Count (right side) */}
-                            {activeFile && (
+                        </div>
+
+                        {/* Editor Tools & Language Selector */}
+                        {activeFile && (
+                            <div className="h-8 border-b border-[#2A2A2A] bg-[#2A2A2A] flex items-center px-4 gap-4">
                                 <div className="flex items-center gap-2 ml-auto">
                                     <span className="text-xs text-[#7C7D7D]">
                                         Lines: {activeFile.content.split("\n").length}
                                     </span>
                                 </div>
-                            )}
-                        </div>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs text-[#7C7D7D]">Language:</span>
+                                    <select
+                                        value={activeFile.language}
+                                        onChange={(e) => handleLanguageChange(e.target.value)}
+                                        className="bg-[#1E1E1E] text-white text-xs px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#3D5FFF]"
+                                    >
+                                        {LANGUAGE_OPTIONS.map((lang) => (
+                                            <option key={lang.value} value={lang.value}>
+                                                {lang.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Editor Container */}
                         <div className="flex-1 overflow-hidden">
@@ -600,7 +598,6 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     )
 }

@@ -179,7 +179,7 @@ export default function HelloworldPage() {
                             <button className="p-1 hover:bg-[#1A1A1A] rounded">
                                 <ArrowLeft className="w-4 h-4" />
                             </button>
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]">
+                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(false)}>
                                 <Eye className="w-4 h-4" />
                             </button>
                             <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(true)}>
@@ -241,18 +241,21 @@ export default function HelloworldPage() {
                         </div>
                     </div>
 
-                    {/* Empty Preview Area */}
-                    <div className="flex-1 bg-[#0F0F0F] flex items-center justify-center">
-                        <div className="text-center">
-                            <h1 className="text-4xl font-bold text-[#E6E6E6] mb-2">helloworld</h1>
-                            <p className="text-[#7C7D7D]">{userMessage}</p>
+                    {/* Preview or Editor Area */}
+                    {!showMonacoEditor ? (
+                        <div className="flex-1 bg-[#0F0F0F] flex items-center justify-center">
+                            <div className="text-center">
+                                <h1 className="text-4xl font-bold text-[#E6E6E6] mb-2">helloworld</h1>
+                                <p className="text-[#7C7D7D]">{userMessage}</p>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <MonacoEditorView onClose={() => setShowMonacoEditor(false)} />
+                    )}
                 </div>
             </div>
 
-            
-            {showMonacoEditor && <MonacoEditorView onClose={() => setShowMonacoEditor(false)} />}
+
         </div>
     )
 }
