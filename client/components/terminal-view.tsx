@@ -8,6 +8,10 @@ import { X, Loader2, Cloud, CloudOff } from "lucide-react"
 import { webContainerService } from "@/lib/webcontainer-service"
 import { isWebContainerSupported, isCommandSupported, getAlternativeSuggestion } from "@/lib/web-sandbox"
 
+// Aesthetic prompt with gradient colors
+const PROMPT = "\x1b[38;2;221;174;211m›\x1b[0m "
+const PROMPT_PLAIN = "› " // For cursor positioning calculations
+
 interface TerminalViewProps {
   onClose: () => void
 }
@@ -39,26 +43,28 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
     // Handle built-in commands
     if (command.toLowerCase() === "clear" || command.toLowerCase() === "cls") {
       term.clear()
-      term.write("$ ")
+      term.write(PROMPT)
       isExecutingRef.current = false
       return
     }
 
     if (command.toLowerCase() === "help") {
-      term.write("\r\n\x1b[1;36m📦 WebContainer Sandbox\x1b[0m - Browser-based Node.js environment\r\n\r\n")
-      term.write("\x1b[1;33mSupported Commands:\x1b[0m\r\n")
-      term.write("  node           - Run JavaScript files\r\n")
-      term.write("  npm            - Node package manager\r\n")
-      term.write("  npx            - Execute npm packages\r\n")
-      term.write("  yarn, pnpm     - Alternative package managers\r\n")
-      term.write("  ls, cat, pwd   - File system commands\r\n")
-      term.write("  mkdir, rm      - Create/remove files\r\n")
-      term.write("  clear          - Clear terminal\r\n")
-      term.write("\r\n\x1b[1;31mNot Supported:\x1b[0m\r\n")
-      term.write("  python, pip    - Use Node.js instead\r\n")
-      term.write("  go, cargo      - Language-specific tools\r\n")
-      term.write("\r\n\x1b[90mTip: All commands run in an isolated browser sandbox!\x1b[0m\r\n")
-      term.write("\r\n$ ")
+      term.write("\r\n")
+      term.write("\x1b[38;2;221;174;211m┌─────────────────────────────────────────────────────────┐\x1b[0m\r\n")
+      term.write("\x1b[38;2;221;174;211m│\x1b[0m  \x1b[38;2;180;200;220mZenMod Terminal\x1b[0m \x1b[38;2;120;120;140m// Browser-based Node.js\x1b[0m             \x1b[38;2;221;174;211m│\x1b[0m\r\n")
+      term.write("\x1b[38;2;221;174;211m└─────────────────────────────────────────────────────────┘\x1b[0m\r\n\r\n")
+      term.write("\x1b[38;2;150;180;210mSupported\x1b[0m\r\n")
+      term.write("  \x1b[38;2;180;220;200mnode\x1b[0m           \x1b[38;2;120;120;140m─\x1b[0m Run JavaScript files\r\n")
+      term.write("  \x1b[38;2;180;220;200mnpm\x1b[0m            \x1b[38;2;120;120;140m─\x1b[0m Node package manager\r\n")
+      term.write("  \x1b[38;2;180;220;200mnpx\x1b[0m            \x1b[38;2;120;120;140m─\x1b[0m Execute npm packages\r\n")
+      term.write("  \x1b[38;2;180;220;200myarn, pnpm\x1b[0m     \x1b[38;2;120;120;140m─\x1b[0m Alternative package managers\r\n")
+      term.write("  \x1b[38;2;180;220;200mls, cat, pwd\x1b[0m   \x1b[38;2;120;120;140m─\x1b[0m File system commands\r\n")
+      term.write("  \x1b[38;2;180;220;200mmkdir, rm\x1b[0m      \x1b[38;2;120;120;140m─\x1b[0m Create/remove files\r\n")
+      term.write("  \x1b[38;2;180;220;200mclear\x1b[0m          \x1b[38;2;120;120;140m─\x1b[0m Clear terminal\r\n")
+      term.write("\r\n\x1b[38;2;210;150;150mNot Available\x1b[0m\r\n")
+      term.write("  \x1b[38;2;140;140;140mpython, pip, go, cargo\x1b[0m\r\n")
+      term.write("\r\n\x1b[38;2;100;100;120m// All commands run in isolated ZenMod environment\x1b[0m\r\n")
+      term.write("\r\n" + PROMPT)
       isExecutingRef.current = false
       return
     }
@@ -66,17 +72,17 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
     // Check if command is supported
     const supportCheck = isCommandSupported(command)
     if (!supportCheck.supported) {
-      term.write(`\r\n\x1b[31m❌ ${supportCheck.message}\x1b[0m\r\n`)
+      term.write(`\r\n\x1b[38;2;210;130;130m× ${supportCheck.message}\x1b[0m\r\n`)
       const suggestion = getAlternativeSuggestion(command)
       if (suggestion) {
-        term.write(`\x1b[33m💡 ${suggestion}\x1b[0m\r\n`)
+        term.write(`\x1b[38;2;221;174;211m  ${suggestion}\x1b[0m\r\n`)
       }
-      term.write("\r\n$ ")
+      term.write("\r\n" + PROMPT)
       isExecutingRef.current = false
       return
     }
 
-    term.write("\r\n\x1b[33m⏳ Running in sandbox...\x1b[0m\r\n")
+    term.write("\r\n\x1b[38;2;180;180;200m› Running...\x1b[0m\r\n")
 
     const startTime = Date.now()
 
@@ -92,26 +98,26 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
 
       // If there was no streamed output, show the buffered output
       if (!result.output && !result.error) {
-        term.write("\x1b[90m(no output)\x1b[0m\r\n")
+        term.write("\x1b[38;2;100;100;120m(no output)\x1b[0m\r\n")
       }
 
-      // Display errors in red (if not already shown via streaming)
+      // Display errors in muted red
       if (result.error && result.exitCode !== 0) {
-        term.write(`\x1b[31m${result.error.replace(/\r?\n/g, "\r\n")}\x1b[0m\r\n`)
+        term.write(`\x1b[38;2;210;130;130m${result.error.replace(/\r?\n/g, "\r\n")}\x1b[0m\r\n`)
       }
 
-      // Display execution info
-      const exitColor = result.exitCode === 0 ? "\x1b[32m" : "\x1b[31m"
-      term.write(`\x1b[90m[Exit: ${exitColor}${result.exitCode}\x1b[90m | Time: ${executionTime}ms | Sandbox]\x1b[0m\r\n`)
+      // Display execution info with gradient-style colors
+      const exitColor = result.exitCode === 0 ? "\x1b[38;2;150;200;170m" : "\x1b[38;2;210;130;130m"
+      term.write(`\x1b[38;2;80;80;100m[\x1b[0m${exitColor}${result.exitCode}\x1b[0m\x1b[38;2;80;80;100m]\x1b[0m \x1b[38;2;100;100;120m${executionTime}ms\x1b[0m \x1b[38;2;221;174;211m·\x1b[0m \x1b[38;2;140;140;160mzenmod\x1b[0m\r\n`)
     } catch (error) {
       if (error instanceof Error) {
-        term.write(`\x1b[31m❌ Error: ${error.message}\x1b[0m\r\n`)
+        term.write(`\x1b[38;2;210;130;130m× ${error.message}\x1b[0m\r\n`)
       } else {
-        term.write("\x1b[31m❌ Unknown error occurred\x1b[0m\r\n")
+        term.write("\x1b[38;2;210;130;130m× Unknown error occurred\x1b[0m\r\n")
       }
     } finally {
       isExecutingRef.current = false
-      term.write("$ ")
+      term.write(PROMPT)
     }
   }, [])
 
@@ -125,35 +131,35 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
       return
     }
 
-    // Initialize terminal
+    // Initialize terminal with aesthetic color scheme
     const term = new Terminal({
       cols: 80,
       rows: 24,
       theme: {
         background: "#0F0F0F",
-        foreground: "#E6E6E6",
-        cursor: "#E6E6E6",
+        foreground: "#D0D0D0",
+        cursor: "#DDAED3",
         cursorAccent: "#0F0F0F",
-        selectionBackground: "#3D5FFF",
-        black: "#000000",
-        red: "#FF5555",
-        green: "#55FF55",
-        yellow: "#FFFF55",
-        blue: "#5555FF",
-        magenta: "#FF55FF",
-        cyan: "#55FFFF",
-        white: "#E6E6E6",
-        brightBlack: "#555555",
-        brightRed: "#FF8888",
-        brightGreen: "#88FF88",
-        brightYellow: "#FFFF88",
-        brightBlue: "#8888FF",
-        brightMagenta: "#FF88FF",
-        brightCyan: "#88FFFF",
-        brightWhite: "#FFFFFF",
+        selectionBackground: "#3D5FFF40",
+        black: "#0F0F0F",
+        red: "#D28282",
+        green: "#96C8A8",
+        yellow: "#DDAED3",
+        blue: "#B4C8DC",
+        magenta: "#DDAED3",
+        cyan: "#96B4C8",
+        white: "#D0D0D0",
+        brightBlack: "#505060",
+        brightRed: "#E0A0A0",
+        brightGreen: "#A8D8B8",
+        brightYellow: "#E8C0E0",
+        brightBlue: "#C8D8E8",
+        brightMagenta: "#E8C0E0",
+        brightCyan: "#A8C8D8",
+        brightWhite: "#E8E8E8",
       },
       fontFamily: '"SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
-      fontSize: 18,
+      fontSize: 13,
       fontWeight: "normal",
       lineHeight: 1.2,
       letterSpacing: 0,
@@ -172,25 +178,25 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
     setTimeout(() => fitAddon.fit(), 0)
 
     // Boot WebContainer
-    term.write("\x1b[36m╔══════════════════════════════════════════════════════════╗\x1b[0m\r\n")
-    term.write("\x1b[36m║\x1b[0m  \x1b[1;32mZenMod Sandbox Terminal\x1b[0m - WebContainer Environment      \x1b[36m║\x1b[0m\r\n")
-    term.write("\x1b[36m║\x1b[0m  \x1b[90mIsolated browser-based execution - No local access\x1b[0m       \x1b[36m║\x1b[0m\r\n")
-    term.write("\x1b[36m╚══════════════════════════════════════════════════════════╝\x1b[0m\r\n")
-    term.write("\r\n\x1b[33m⏳ Booting WebContainer...\x1b[0m\r\n")
+    term.write("\x1b[38;2;221;174;211m┌─────────────────────────────────────────────────────────┐\x1b[0m\r\n")
+    term.write("\x1b[38;2;221;174;211m│\x1b[0m  \x1b[38;2;180;200;220mZenMod\x1b[0m \x1b[38;2;150;170;190mTerminal\x1b[0m                                       \x1b[38;2;221;174;211m│\x1b[0m\r\n")
+    term.write("\x1b[38;2;221;174;211m│\x1b[0m  \x1b[38;2;100;100;120mIsolated browser-based execution\x1b[0m                      \x1b[38;2;221;174;211m│\x1b[0m\r\n")
+    term.write("\x1b[38;2;221;174;211m└─────────────────────────────────────────────────────────┘\x1b[0m\r\n")
+    term.write("\r\n\x1b[38;2;150;150;170m› Booting WebContainer...\x1b[0m\r\n")
 
     // Boot the WebContainer
     webContainerService.boot()
       .then(() => {
         setIsBooting(false)
         setIsReady(true)
-        term.write("\x1b[32m✓ WebContainer ready!\x1b[0m\r\n")
-        term.write("\x1b[90mType 'help' for available commands\x1b[0m\r\n\r\n$ ")
+        term.write("\x1b[38;2;150;200;170m✓ Ready\x1b[0m\r\n")
+        term.write("\x1b[38;2;100;100;120m  Type 'help' for available commands\x1b[0m\r\n\r\n" + PROMPT)
       })
       .catch((error) => {
         setIsBooting(false)
         setBootError(error.message)
-        term.write(`\x1b[31m❌ Failed to boot WebContainer: ${error.message}\x1b[0m\r\n`)
-        term.write("\x1b[33mTip: WebContainers require specific browser security headers.\x1b[0m\r\n")
+        term.write(`\x1b[38;2;210;130;130m× Failed to boot: ${error.message}\x1b[0m\r\n`)
+        term.write("\x1b[38;2;221;174;211m  WebContainers require specific browser security headers\x1b[0m\r\n")
       })
 
     // Handle terminal input
@@ -204,7 +210,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
             const historyCommand = commandHistoryRef.current[commandHistoryRef.current.length - 1 - historyIndexRef.current]
             
             // Clear current input
-            term.write("\r$ " + " ".repeat(inputBufferRef.current.length) + "\r$ ")
+            term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
             inputBufferRef.current = historyCommand
             term.write(historyCommand)
           }
@@ -219,12 +225,12 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
           const historyCommand = commandHistoryRef.current[commandHistoryRef.current.length - 1 - historyIndexRef.current]
           
           // Clear current input
-          term.write("\r$ " + " ".repeat(inputBufferRef.current.length) + "\r$ ")
+          term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
           inputBufferRef.current = historyCommand
           term.write(historyCommand)
         } else if (historyIndexRef.current === 0) {
           historyIndexRef.current = -1
-          term.write("\r$ " + " ".repeat(inputBufferRef.current.length) + "\r$ ")
+          term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
           inputBufferRef.current = ""
         }
         return
@@ -239,7 +245,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
         if (command !== "") {
           executeCommand(command, term)
         } else {
-          term.write("$ ")
+          term.write(PROMPT)
         }
       } else if (data === "\u007F" || data === "\b") {
         // Backspace
@@ -252,13 +258,13 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
         if (isExecutingRef.current) {
           webContainerService.killCurrentProcess()
         }
-        term.write("^C\r\n$ ")
+        term.write("\x1b[38;2;140;140;160m^C\x1b[0m\r\n" + PROMPT)
         inputBufferRef.current = ""
         historyIndexRef.current = -1
       } else if (data === "\u000C") {
         // Ctrl+L - clear screen
         term.clear()
-        term.write("$ " + inputBufferRef.current)
+        term.write(PROMPT + inputBufferRef.current)
       } else if (data.charCodeAt(0) >= 32 && !isExecutingRef.current) {
         // Regular printable character
         inputBufferRef.current += data
@@ -312,7 +318,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
           {isReady && (
             <span className="flex items-center gap-1 text-xs text-green-500">
               <Cloud className="w-3 h-3" />
-              Sandbox
+              ZenMod
             </span>
           )}
           {bootError && (

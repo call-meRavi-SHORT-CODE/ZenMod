@@ -333,11 +333,11 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                 <div
                     className={`flex items-center gap-1 px-2 py-1.5 text-sm cursor-pointer hover:bg-[#2A2A2A] transition-colors ${
                         node.type === "file" && activeFileId === node.fileId
-                            ? "bg-[#2A2A2A] text-[#3D5FFF]"
+                            ? "bg-[#2A2A2A] text-[#DDAED3]"
                             : "text-[#A4A4A4]"
                     } ${
                         dragOverFolderId === node.id && node.type === "folder"
-                            ? "bg-[#353535] border-l-2 border-[#3D5FFF]"
+                            ? "bg-[#353535] border-l-2 border-[#DDAED3]"
                             : ""
                     } ${
                         draggedNodeId === node.id ? "opacity-50" : ""
@@ -465,7 +465,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                                 }
                                             }}
                                             autoFocus
-                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#3D5FFF] focus:border-[#5A7FFF]"
+                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#DDAED3] focus:border-[#E8C0E0]"
                                         />
                                     </div>
                                 )}
@@ -489,7 +489,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                                 }
                                             }}
                                             autoFocus
-                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#3D5FFF] focus:border-[#5A7FFF]"
+                                            className="w-full bg-[#1E1E1E] text-white text-sm px-2 py-1 rounded outline-none border border-[#DDAED3] focus:border-[#E8C0E0]"
                                         />
                                     </div>
                                 )}
@@ -570,7 +570,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                     key={file.id}
                                     className={`flex items-center gap-2 px-3 py-2 rounded-t text-sm cursor-pointer transition-colors whitespace-nowrap ${
                                         activeFileId === file.id
-                                            ? "bg-[#1E1E1E] text-white border-b-2 border-[#3D5FFF]"
+                                            ? "bg-[#1E1E1E] text-white border-b-2 border-[#DDAED3]"
                                             : "bg-[#2A2A2A] text-[#A4A4A4] hover:text-white"
                                     }`}
                                     onClick={() => setActiveFileId(file.id)}
@@ -605,7 +605,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                     <select
                                         value={activeFile.language}
                                         onChange={(e) => handleLanguageChange(e.target.value)}
-                                        className="bg-[#1E1E1E] text-white text-xs px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#3D5FFF]"
+                                        className="bg-[#1E1E1E] text-white text-xs px-2 py-1 rounded outline-none border border-[#353535] focus:border-[#DDAED3]"
                                     >
                                         {LANGUAGE_OPTIONS.map((lang) => (
                                             <option key={lang.value} value={lang.value}>
@@ -658,7 +658,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                             </div>
                             <button
                                 onClick={onClose}
-                                className="px-3 py-1 bg-[#3D5FFF] text-white rounded hover:bg-[#5A7FFF] transition-colors text-xs"
+                                className="px-3 py-1 bg-[#DDAED3] text-[#0F0F0F] rounded hover:bg-[#E8C0E0] transition-colors text-xs font-medium"
                             >
                                 Close Editor
                             </button>
