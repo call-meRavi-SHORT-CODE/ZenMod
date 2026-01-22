@@ -178,7 +178,7 @@ export default function HelloworldPage() {
 
                         <div className="h-10 bg-[#0F0F0F] border-t border-[#2A2A2A] flex items-center justify-between px-4">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs text-[#7C7D7D]">Upgrade to Team to unlock all of v0's features and more credits</span>
+                                <span className="text-xs text-[#7C7D7D]">Upgrade to Team to unlock all of ZenMod's features and more credits</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <button className="text-xs text-[#3D5FFF] hover:text-[#5A7FFF] font-medium">
