@@ -42,125 +42,24 @@ interface ProjectState {
 
 // Default project template
 const DEFAULT_FILES: FileSystemTree = {
-    'package.json': {
-        file: {
-            contents: JSON.stringify({
-                name: 'zenmod-project',
-                version: '1.0.0',
-                type: 'module',
-                scripts: {
-                    dev: 'vite',
-                    build: 'vite build',
-                    preview: 'vite preview',
-                },
-                dependencies: {
-                    react: '^18.2.0',
-                    'react-dom': '^18.2.0',
-                },
-                devDependencies: {
-                    vite: '^5.0.0',
-                    '@vitejs/plugin-react': '^4.0.0',
-                },
-            }, null, 2),
-        },
-    },
-    'index.html': {
-        file: {
-            contents: `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZenMod Project</title>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-</html>`,
-        },
-    },
-    'vite.config.js': {
-        file: {
-            contents: `import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-});`,
-        },
-    },
-    src: {
+    '.zenmod': {
         directory: {
-            'main.jsx': {
+            'config.json': {
                 file: {
-                    contents: `import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);`,
+                    contents: JSON.stringify({
+                        template: 'bolt-vite-react-ts'
+                    }, null, 2),
                 },
             },
-            'App.jsx': {
-                file: {
-                    contents: `import React from 'react';
+        },
+    },
+    'prompt.md': {
+        file: {
+            contents: `For all designs I ask you to make, have them be beautiful, not cookie cutter. Make webpages that are fully featured and worthy for production.
 
-function App() {
-  return (
-    <div className="app">
-      <h1>Welcome to ZenMod</h1>
-      <p>Start building your project!</p>
-    </div>
-  );
-}
+By default, this template supports JSX syntax with Tailwind CSS classes, React hooks, and Lucide React for icons. Do not install other packages for UI themes, icons, etc unless absolutely necessary or I request them.
 
-export default App;`,
-                },
-            },
-            'index.css': {
-                file: {
-                    contents: `* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: #0a0a0a;
-  color: #ffffff;
-  min-height: 100vh;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  text-align: center;
-  padding: 2rem;
-}
-
-h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-p {
-  color: #888;
-  font-size: 1.2rem;
-}`,
-                },
-            },
+Use icons from lucide-react for logos.`,
         },
     },
 };
