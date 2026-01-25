@@ -1,25 +1,60 @@
 "use client"
 
-import { useState } from "react"
-import { MessageSquare, Layout, Link2, Database, Route, Settings, Plus, Sparkles, ChevronDown, Calendar, MoreHorizontal, ArrowLeft, ArrowRight, Eye, Code, ExternalLink, Share2, Monitor, Globe, RotateCcw, ChevronUp } from "lucide-react"
+import { useState, useEffect } from "react"
+import {
+    MessageSquare,
+    Layout,
+    Link2,
+    Database,
+    Route,
+    Settings,
+    Sparkles,
+    ChevronDown,
+    MoreHorizontal,
+    ArrowLeft,
+    ArrowRight,
+    Eye,
+    Code,
+    Share2,
+    Monitor,
+    Globe,
+    RotateCcw,
+    ChevronUp,
+    Terminal as TerminalIcon,
+    FolderOpen
+} from "lucide-react"
 import { useRouter } from "next/navigation"
 import MonacoEditorView from "@/components/monaco-editor-view"
 import TerminalView from "@/components/terminal-view"
+import ChatInterface from "@/components/chat-interface"
+import { useProjectStore } from "@/lib/stores/project-store"
+import { useFilesystemStore } from "@/lib/stores/filesystem-store"
+import { useAgentStore } from "@/lib/agent/agent-store"
 
 export default function HelloworldPage() {
     const router = useRouter()
-    const userMessage = ""
-    const [followUpInput, setFollowUpInput] = useState("")
     const [showMonacoEditor, setShowMonacoEditor] = useState(true)
     const [terminalCollapsed, setTerminalCollapsed] = useState(false)
-    const [dividerPos, setDividerPos] = useState(50)
+    const [dividerPos, setDividerPos] = useState(60)
     const [isDragging, setIsDragging] = useState(false)
+    const [activeTab, setActiveTab] = useState<"chat" | "deploy" | "connect" | "vars" | "routes" | "settings">("chat")
+    const [previewUrl, setPreviewUrl] = useState("")
 
-    const handleFollowUp = () => {
-        if (followUpInput.trim()) {
-            setFollowUpInput("")
+    // Stores
+    const { currentProject, createProject } = useProjectStore()
+    const { initialize: initFS, isLoading: fsLoading } = useFilesystemStore()
+    const { pendingCommands, executeCommand } = useAgentStore()
+
+    // Initialize project on mount
+    useEffect(() => {
+        const init = async () => {
+            if (!currentProject) {
+                await createProject("New Project")
+            }
+            await initFS()
         }
-    }
+        init()
+    }, [currentProject, createProject, initFS])
 
     const handleMouseDown = () => {
         setIsDragging(true)
@@ -39,6 +74,13 @@ export default function HelloworldPage() {
         }
     }
 
+    // Handle command execution from chat
+    const handleCommandExecute = (command: string) => {
+        // This will be triggered when user clicks a command in chat
+        // The terminal will pick it up via the pending commands
+        executeCommand(command)
+    }
+
     return (
         <div className="h-screen bg-[#0F0F0F] text-[#A4A4A4] flex flex-col overflow-hidden">
             {/* Top Header */}
@@ -51,146 +93,94 @@ export default function HelloworldPage() {
                     </div>
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-white">Generated Page v1</span>
-                            <button className="w-4 h-4 rounded bg-[#353535] flex items-center justify-center">
-                                <span className="text-xs text-[#7C7D7D]">?</span>
-                            </button>
+                            <span className="text-sm font-medium text-white">
+                                {currentProject?.name || "Loading..."}
+                            </span>
+                            <span className="text-xs px-1.5 py-0.5 rounded bg-[#353535] text-[#7C7D7D]">
+                                {currentProject?.techStack?.framework || "react"}
+                            </span>
                         </div>
-                        <span className="text-xs text-[#7C7D7D]">View Project</span>
+                        <span className="text-xs text-[#7C7D7D]">ZenMod Workspace</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button className="px-3 py-1.5 text-xs border border-[#353535] rounded-md hover:bg-[#1A1A1A] flex items-center gap-1.5">
-                        <span>Refer</span>
+                    <button
+                        onClick={() => router.push("/dashboard")}
+                        className="px-3 py-1.5 text-xs border border-[#353535] rounded-md hover:bg-[#1A1A1A] flex items-center gap-1.5"
+                    >
+                        <FolderOpen className="w-3.5 h-3.5" />
+                        Projects
                     </button>
                     <button className="px-2 py-1.5 text-xs border border-[#353535] rounded-md hover:bg-[#1A1A1A]">
                         <MoreHorizontal className="w-4 h-4" />
                     </button>
-                    <button className="px-2 py-1.5 text-xs border border-[#353535] rounded-md hover:bg-[#1A1A1A]">
-                        <Share2 className="w-4 h-4" />
-                    </button>
                     <button className="px-3 py-1.5 text-xs border border-[#353535] rounded-md hover:bg-[#1A1A1A] flex items-center gap-1.5">
                         <Share2 className="w-3.5 h-3.5" />
-                        <span>Share</span>
+                        Share
                     </button>
                     <button className="px-3 py-1.5 text-xs bg-white text-black rounded-md hover:bg-gray-100 font-medium">
                         Publish
                     </button>
-                   
                 </div>
             </header>
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Left Sidebar */}
                 <aside className="w-16 border-r border-[#2A2A2A] flex flex-col items-center py-4 gap-6 bg-[#0F0F0F]">
-                    <button className="flex flex-col items-center gap-1 text-white">
+                    <button
+                        onClick={() => setActiveTab("chat")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "chat" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <MessageSquare className="w-5 h-5" />
                         <span className="text-[10px]">Chat</span>
                     </button>
-                    <button className="flex flex-col items-center gap-1 text-[#7C7D7D] hover:text-white">
+                    <button
+                        onClick={() => setActiveTab("deploy")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "deploy" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <Layout className="w-5 h-5" />
                         <span className="text-[10px]">Deploy</span>
                     </button>
-                    <button className="flex flex-col items-center gap-1 text-[#7C7D7D] hover:text-white">
+                    <button
+                        onClick={() => setActiveTab("connect")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "connect" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <Link2 className="w-5 h-5" />
                         <span className="text-[10px]">Connect</span>
                     </button>
-                    <button className="flex flex-col items-center gap-1 text-[#7C7D7D] hover:text-white">
+                    <button
+                        onClick={() => setActiveTab("vars")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "vars" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <Database className="w-5 h-5" />
                         <span className="text-[10px]">Vars</span>
                     </button>
-                    <button className="flex flex-col items-center gap-1 text-[#7C7D7D] hover:text-white">
+                    <button
+                        onClick={() => setActiveTab("routes")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "routes" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <Route className="w-5 h-5" />
                         <span className="text-[10px]">Routes</span>
                     </button>
                     <div className="flex-1"></div>
-                    <button className="flex flex-col items-center gap-1 text-[#7C7D7D] hover:text-white">
+                    <button
+                        onClick={() => setActiveTab("settings")}
+                        className={`flex flex-col items-center gap-1 ${activeTab === "settings" ? "text-white" : "text-[#7C7D7D] hover:text-white"}`}
+                    >
                         <Settings className="w-5 h-5" />
                         <span className="text-[10px]">Settings</span>
                     </button>
                 </aside>
 
                 {/* Chat/Project Area */}
-                <div className="w-140 border-r border-[#2A2A2A] flex flex-col bg-[#0F0F0F]">
-                    <div className="flex-1 overflow-y-auto p-4">
-                        <div className="flex items-center gap-2 mb-4">
-                            <Calendar className="w-4 h-4 text-[#7C7D7D]" />
-                            <span className="text-xs text-[#7C7D7D]">Message from user</span>
+                <div className="w-96 border-r border-[#2A2A2A] flex flex-col bg-[#0F0F0F]">
+                    {activeTab === "chat" ? (
+                        <ChatInterface onCommandExecute={handleCommandExecute} />
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center text-[#7C7D7D]">
+                            <p className="text-sm">{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} panel coming soon</p>
                         </div>
-
-                        <div className="bg-[#1A1A1A] border border-[#3D5FFF] rounded-lg p-3 relative">
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <Sparkles className="w-4 h-4 text-[#3D5FFF]" />
-                                    <span className="text-sm font-medium text-white">User Input</span>
-                                </div>
-                                <button className="text-[#7C7D7D] hover:text-white">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </button>
-                            </div>
-                            <span className="text-xs text-[#7C7D7D] bg-[#2A2A2A] px-2 py-0.5 rounded">v1</span>
-                            <p className="text-sm text-[#A4A4A4] mt-3">{userMessage}</p>
-                        </div>
-
-                        <div className="flex items-center gap-2 mt-3">
-                            <button className="p-1.5 border border-[#353535] rounded hover:bg-[#1A1A1A]">
-                                <Share2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button className="p-1.5 border border-[#353535] rounded hover:bg-[#1A1A1A]">
-                                <MessageSquare className="w-3.5 h-3.5" />
-                            </button>
-                            <button className="p-1.5 border border-[#353535] rounded hover:bg-[#1A1A1A]">
-                                <Code className="w-3.5 h-3.5" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Input Area */}
-                    <div className="border-t border-[#2A2A2A] p-3">
-                        <div className="bg-[#1A1A1A] border border-[#2A2A2A] rounded-lg p-3 relative">
-                            <input
-                                type="text"
-                                placeholder="Ask a follow-up..."
-                                value={followUpInput}
-                                onChange={(e) => setFollowUpInput(e.target.value)}
-                                className="w-full bg-transparent text-sm text-[#E6E6E6] outline-none placeholder-[#5A5A5A]"
-                            />
-                            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-[#2A2A2A]">
-                                <button className="p-1 hover:bg-[#2A2A2A] rounded">
-                                    <Plus className="w-4 h-4 text-[#7C7D7D]" />
-                                </button>
-                                <button className="p-1 hover:bg-[#2A2A2A] rounded">
-                                    <Sparkles className="w-4 h-4 text-[#7C7D7D]" />
-                                </button>
-                                <button className="flex items-center gap-1 px-2 py-1 hover:bg-[#2A2A2A] rounded text-xs text-[#7C7D7D]">
-                                    <span>v8 Mini</span>
-                                    <ChevronDown className="w-3 h-3" />
-                                </button>
-                                <button onClick={handleFollowUp} className="ml-auto p-1.5 bg-[#2A2A2A] rounded hover:bg-[#353535]">
-                                    <ArrowLeft className="w-4 h-4 text-[#7C7D7D]" />
-                                </button>
-
-                                
-                            </div>
-
-                        
-                        </div>
-
-                        <div className="h-10 bg-[#0F0F0F] border-t border-[#2A2A2A] flex items-center justify-between px-4">
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-[#7C7D7D]">Upgrade to Team to unlock all of ZenMod's features and more credits</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button className="text-xs text-[#3D5FFF] hover:text-[#5A7FFF] font-medium">
-                                    Upgrade Plan
-                                </button>
-                                <button className="text-[#7C7D7D] hover:text-[#A4A4A4]">
-                                    <span className="text-xs">×</span>
-                                </button>
-                            </div>
-                        </div>
-                        
-                    </div>
+                    )}
                 </div>
 
                 {/* Main Preview/Editor Area */}
@@ -201,65 +191,57 @@ export default function HelloworldPage() {
                             <button className="p-1 hover:bg-[#1A1A1A] rounded">
                                 <ArrowLeft className="w-4 h-4" />
                             </button>
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(false)}>
+                            <button
+                                className={`p-1 hover:bg-[#1A1A1A] rounded border ${!showMonacoEditor ? "border-[#DDAED3]" : "border-[#2A2A2A]"}`}
+                                onClick={() => setShowMonacoEditor(false)}
+                                title="Preview"
+                            >
                                 <Eye className="w-4 h-4" />
                             </button>
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded border border-[#2A2A2A]" onClick={() => setShowMonacoEditor(true)}>
+                            <button
+                                className={`p-1 hover:bg-[#1A1A1A] rounded border ${showMonacoEditor ? "border-[#DDAED3]" : "border-[#2A2A2A]"}`}
+                                onClick={() => setShowMonacoEditor(true)}
+                                title="Code"
+                            >
                                 <Code className="w-4 h-4" />
                             </button>
                         </div>
 
-                        <div className="flex items-left gap-0.5 px-12 min-h-[32px] border border-[#353535] rounded-md bg-[#1A1A1A] transition-colors">
-                                <button className="p-0.5 hover:bg-[#2A2A2A] rounded flex items-center">
-                                    <ArrowLeft className="w-3.5 h-3.5 text-[#7C7D7D]" />
-                                </button>
-
-                                <button className="p-0.5 hover:bg-[#2A2A2A] rounded flex items-center">
-                                    <ArrowRight className="w-3.5 h-3.5 text-[#7C7D7D]" />
-                                </button>
-
-                               
-                                
-                                <button className="p-1 hover:bg-[#1A1A1A] rounded">
-                                    <Monitor className="w-4 h-4 text-[#7C7D7D]" />
-                                </button>
-                                <div className="flex items-center gap-0 bg-[#1A1A1A] rounded px-2 py-1">
-                                    <span className="text-lg text-[#7C7D7D] select-none">/</span>
-                                    <input
-                                        type="text"
-                                        value={followUpInput}
-                                        onChange={e => setFollowUpInput(e.target.value.replace(/^\/*/, ""))}
-                                        className="w-32 px-2 py-1 text-xs text-[#E6E6E6] border-none rounded-md bg-[#1A1A1A] outline-none placeholder-[#5A5A5A]"
-                                        style={{ paddingLeft: 0 }}
-                                    />
-                                </div>
-
-                                <button className="p-0.5 hover:bg-[#2A2A2A] rounded flex items-center">
-                                    <Globe className="w-3.5 h-3.5 text-[#7C7D7D]" />
-                                </button>
-
-                                
-
-                                <button className="p-0.5 hover:bg-[#2A2A2A] rounded flex items-center">
-                                    <RotateCcw className="w-3.5 h-3.5 text-[#7C7D7D]" />
-                                </button>
-
-                                
-
-                                
-
-
+                        <div className="flex items-center gap-0.5 px-3 min-h-[32px] border border-[#353535] rounded-md bg-[#1A1A1A]">
+                            <button className="p-0.5 hover:bg-[#2A2A2A] rounded">
+                                <ArrowLeft className="w-3.5 h-3.5 text-[#7C7D7D]" />
+                            </button>
+                            <button className="p-0.5 hover:bg-[#2A2A2A] rounded">
+                                <ArrowRight className="w-3.5 h-3.5 text-[#7C7D7D]" />
+                            </button>
+                            <button className="p-1 hover:bg-[#1A1A1A] rounded">
+                                <Monitor className="w-4 h-4 text-[#7C7D7D]" />
+                            </button>
+                            <div className="flex items-center gap-0 bg-[#1A1A1A] rounded px-2 py-1">
+                                <span className="text-sm text-[#7C7D7D] select-none">/</span>
+                                <input
+                                    type="text"
+                                    placeholder="path"
+                                    value={previewUrl}
+                                    onChange={e => setPreviewUrl(e.target.value)}
+                                    className="w-24 px-1 py-1 text-xs text-[#E6E6E6] border-none rounded-md bg-[#1A1A1A] outline-none placeholder-[#5A5A5A]"
+                                />
+                            </div>
+                            <button className="p-0.5 hover:bg-[#2A2A2A] rounded">
+                                <Globe className="w-3.5 h-3.5 text-[#7C7D7D]" />
+                            </button>
+                            <button className="p-0.5 hover:bg-[#2A2A2A] rounded">
+                                <RotateCcw className="w-3.5 h-3.5 text-[#7C7D7D]" />
+                            </button>
                         </div>
 
-
-                        
                         <div className="flex items-center gap-2">
-                            {/*terminal*/}
-                            <button 
-                                className="p-1 hover:bg-[#1A1A1A] rounded"
+                            <button
+                                className="p-1 hover:bg-[#1A1A1A] rounded flex items-center gap-1 text-[#7C7D7D] hover:text-white"
                                 onClick={() => setTerminalCollapsed(!terminalCollapsed)}
                             >
-                                <ChevronUp className={`w-4 h-4 transition-transform ${terminalCollapsed ? 'rotate-180' : ''}`} />
+                                <TerminalIcon className="w-4 h-4" />
+                                <ChevronUp className={`w-3 h-3 transition-transform ${terminalCollapsed ? 'rotate-180' : ''}`} />
                             </button>
                             <button className="p-1 hover:bg-[#1A1A1A] rounded">
                                 <MoreHorizontal className="w-4 h-4" />
@@ -268,19 +250,24 @@ export default function HelloworldPage() {
                     </div>
 
                     {/* Preview or Editor Area with Draggable Terminal */}
-                    <div 
+                    <div
                         className="flex-1 overflow-hidden flex flex-col bg-[#0F0F0F]"
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseUp}
                     >
                         {/* Main Preview/Editor Panel */}
-                        <div style={{ flex: `0 0 ${showMonacoEditor && !terminalCollapsed ? dividerPos + '%' : '100%'}`, minHeight: 0 }} className="overflow-auto bg-[#0F0F0F]">
+                        <div
+                            style={{ flex: `0 0 ${showMonacoEditor && !terminalCollapsed ? dividerPos + '%' : '100%'}`, minHeight: 0 }}
+                            className="overflow-auto bg-[#0F0F0F]"
+                        >
                             {!showMonacoEditor ? (
                                 <div className="h-full bg-[#0F0F0F] flex items-center justify-center">
                                     <div className="text-center">
-                                        <h1 className="text-4xl font-bold text-[#E6E6E6] mb-2">helloworld</h1>
-                                        <p className="text-[#7C7D7D]">{userMessage}</p>
+                                        <Sparkles className="w-12 h-12 text-[#DDAED3] mx-auto mb-4" />
+                                        <h4 className="text-2xl font-bold text-[#E6E6E6] mb-2">Preview</h4>
+                                        <p className="text-[#7C7D7D]">Run your app to see the preview here</p>
+                                        <p className="text-xs text-[#5A5A5A] mt-2">Use the terminal to run: npm run dev</p>
                                     </div>
                                 </div>
                             ) : (
@@ -288,25 +275,28 @@ export default function HelloworldPage() {
                             )}
                         </div>
 
-                        {/* Draggable Divider - Only show when in editor AND terminal is open */}
+                        {/* Draggable Divider */}
                         {showMonacoEditor && !terminalCollapsed && (
                             <div
                                 onMouseDown={handleMouseDown}
-                                className={`h-1 bg-[#2A2A2A] hover:bg-[#3D5FFF] transition-colors cursor-row-resize flex-shrink-0 ${isDragging ? 'bg-[#3D5FFF]' : ''}`}
+                                className={`h-1 bg-[#2A2A2A] hover:bg-[#DDAED3] transition-colors cursor-row-resize flex-shrink-0 ${isDragging ? 'bg-[#DDAED3]' : ''}`}
                             />
                         )}
 
-                        {/* Terminal Panel - Only show when in editor AND terminal is open */}
+                        {/* Terminal Panel */}
                         {showMonacoEditor && !terminalCollapsed && (
-                            <div style={{ flex: `0 0 ${100 - dividerPos + '%'}`, minHeight: 0 }} className="overflow-hidden bg-[#0F0F0F]">
-                                <TerminalView onClose={() => setTerminalCollapsed(true)} />
+                            <div
+                                style={{ flex: `0 0 ${100 - dividerPos + '%'}`, minHeight: 0 }}
+                                className="overflow-hidden bg-[#0F0F0F]"
+                            >
+                                <TerminalView
+                                    onClose={() => setTerminalCollapsed(true)}
+                                />
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-
-
         </div>
     )
 }
