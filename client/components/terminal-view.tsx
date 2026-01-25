@@ -4,35 +4,44 @@ import { useEffect, useRef, useCallback, useState } from "react"
 import { Terminal } from "@xterm/xterm"
 import { FitAddon } from "@xterm/addon-fit"
 import "@xterm/xterm/css/xterm.css"
-import { X, Loader2, Cloud, CloudOff } from "lucide-react"
+import { X, Loader2, Cloud, CloudOff, RefreshCw } from "lucide-react"
 import { webContainerService } from "@/lib/webcontainer-service"
 import { isWebContainerSupported, isCommandSupported, getAlternativeSuggestion } from "@/lib/web-sandbox"
+import { unifiedFS } from "@/lib/unified-filesystem"
+import { useFilesystemStore } from "@/lib/stores/filesystem-store"
 
-// Aesthetic prompt with gradient colors
-const PROMPT = "\x1b[38;2;221;174;211m›\x1b[0m "
+// Aesthetic prompt with gradient colors and working directory
+const getPrompt = (cwd: string) => `\x1b[38;2;100;100;120m${cwd}\x1b[0m \x1b[38;2;221;174;211m›\x1b[0m `
 const PROMPT_PLAIN = "› " // For cursor positioning calculations
 
 interface TerminalViewProps {
   onClose: () => void
+  onCommandRun?: (command: string) => void
 }
 
-export default function TerminalView({ onClose }: TerminalViewProps) {
+export default function TerminalView({ onClose, onCommandRun }: TerminalViewProps) {
   const terminalRef = useRef<HTMLDivElement>(null)
   const terminalInstanceRef = useRef<Terminal | null>(null)
   const inputBufferRef = useRef("")
   const commandHistoryRef = useRef<string[]>([])
   const historyIndexRef = useRef(-1)
   const isExecutingRef = useRef(false)
+  const cwdRef = useRef("/")
   const [isBooting, setIsBooting] = useState(true)
   const [isReady, setIsReady] = useState(false)
   const [bootError, setBootError] = useState<string | null>(null)
+
+  const { refreshFileTree } = useFilesystemStore()
+
+  // Get current prompt
+  const getCurrentPrompt = () => getPrompt(cwdRef.current)
 
   // Execute command in WebContainer
   const executeCommand = useCallback(async (command: string, term: Terminal) => {
     if (!command.trim() || isExecutingRef.current) return
 
     isExecutingRef.current = true
-    
+
     // Add to history
     commandHistoryRef.current.push(command)
     if (commandHistoryRef.current.length > 50) {
@@ -43,7 +52,44 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
     // Handle built-in commands
     if (command.toLowerCase() === "clear" || command.toLowerCase() === "cls") {
       term.clear()
-      term.write(PROMPT)
+      term.write(getCurrentPrompt())
+      isExecutingRef.current = false
+      return
+    }
+
+    // Handle cd command specially
+    if (command.startsWith("cd ")) {
+      const targetDir = command.slice(3).trim()
+      let newPath = targetDir
+
+      if (targetDir === "..") {
+        const parts = cwdRef.current.split("/").filter(Boolean)
+        parts.pop()
+        newPath = "/" + parts.join("/")
+      } else if (targetDir === "~" || targetDir === "/") {
+        newPath = "/"
+      } else if (!targetDir.startsWith("/")) {
+        newPath = cwdRef.current === "/"
+          ? `/${targetDir}`
+          : `${cwdRef.current}/${targetDir}`
+      }
+
+      // Verify directory exists
+      try {
+        await webContainerService.readDir(newPath)
+        cwdRef.current = newPath || "/"
+        unifiedFS.setCwd(cwdRef.current)
+        term.write("\r\n" + getCurrentPrompt())
+      } catch {
+        term.write(`\r\n\x1b[38;2;210;130;130mcd: no such directory: ${targetDir}\x1b[0m\r\n` + getCurrentPrompt())
+      }
+
+      isExecutingRef.current = false
+      return
+    }
+
+    if (command.toLowerCase() === "pwd") {
+      term.write(`\r\n${cwdRef.current}\r\n` + getCurrentPrompt())
       isExecutingRef.current = false
       return
     }
@@ -64,7 +110,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
       term.write("\r\n\x1b[38;2;210;150;150mNot Available\x1b[0m\r\n")
       term.write("  \x1b[38;2;140;140;140mpython, pip, go, cargo\x1b[0m\r\n")
       term.write("\r\n\x1b[38;2;100;100;120m// All commands run in isolated ZenMod environment\x1b[0m\r\n")
-      term.write("\r\n" + PROMPT)
+      term.write("\r\n" + getCurrentPrompt())
       isExecutingRef.current = false
       return
     }
@@ -77,7 +123,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
       if (suggestion) {
         term.write(`\x1b[38;2;221;174;211m  ${suggestion}\x1b[0m\r\n`)
       }
-      term.write("\r\n" + PROMPT)
+      term.write("\r\n" + getCurrentPrompt())
       isExecutingRef.current = false
       return
     }
@@ -109,6 +155,14 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
       // Display execution info with gradient-style colors
       const exitColor = result.exitCode === 0 ? "\x1b[38;2;150;200;170m" : "\x1b[38;2;210;130;130m"
       term.write(`\x1b[38;2;80;80;100m[\x1b[0m${exitColor}${result.exitCode}\x1b[0m\x1b[38;2;80;80;100m]\x1b[0m \x1b[38;2;100;100;120m${executionTime}ms\x1b[0m \x1b[38;2;221;174;211m·\x1b[0m \x1b[38;2;140;140;160mzenmod\x1b[0m\r\n`)
+
+      // Sync filesystem after command execution
+      // This ensures any files created/modified by terminal commands appear in editor
+      await refreshFileTree()
+
+      // Notify parent of command execution
+      onCommandRun?.(command)
+
     } catch (error) {
       if (error instanceof Error) {
         term.write(`\x1b[38;2;210;130;130m× ${error.message}\x1b[0m\r\n`)
@@ -117,9 +171,9 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
       }
     } finally {
       isExecutingRef.current = false
-      term.write(PROMPT)
+      term.write(getCurrentPrompt())
     }
-  }, [])
+  }, [refreshFileTree, onCommandRun])
 
   useEffect(() => {
     if (!terminalRef.current) return
@@ -173,7 +227,7 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
     // Add fit addon
     const fitAddon = new FitAddon()
     term.loadAddon(fitAddon)
-    
+
     // Fit after a short delay to ensure DOM is ready
     setTimeout(() => fitAddon.fit(), 0)
 
@@ -186,11 +240,15 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
 
     // Boot the WebContainer
     webContainerService.boot()
-      .then(() => {
+      .then(async () => {
         setIsBooting(false)
         setIsReady(true)
+
+        // Initialize unified filesystem
+        await unifiedFS.initialize()
+
         term.write("\x1b[38;2;150;200;170m✓ Ready\x1b[0m\r\n")
-        term.write("\x1b[38;2;100;100;120m  Type 'help' for available commands\x1b[0m\r\n\r\n" + PROMPT)
+        term.write("\x1b[38;2;100;100;120m  Type 'help' for available commands\x1b[0m\r\n\r\n" + getCurrentPrompt())
       })
       .catch((error) => {
         setIsBooting(false)
@@ -208,29 +266,29 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
           if (historyIndexRef.current < commandHistoryRef.current.length - 1) {
             historyIndexRef.current++
             const historyCommand = commandHistoryRef.current[commandHistoryRef.current.length - 1 - historyIndexRef.current]
-            
+
             // Clear current input
-            term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
+            term.write("\r" + " ".repeat(cwdRef.current.length + PROMPT_PLAIN.length + inputBufferRef.current.length + 2) + "\r" + getCurrentPrompt())
             inputBufferRef.current = historyCommand
             term.write(historyCommand)
           }
         }
         return
       }
-      
+
       if (data === "\x1b[B") {
         // Arrow Down - next command
         if (historyIndexRef.current > 0) {
           historyIndexRef.current--
           const historyCommand = commandHistoryRef.current[commandHistoryRef.current.length - 1 - historyIndexRef.current]
-          
+
           // Clear current input
-          term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
+          term.write("\r" + " ".repeat(cwdRef.current.length + PROMPT_PLAIN.length + inputBufferRef.current.length + 2) + "\r" + getCurrentPrompt())
           inputBufferRef.current = historyCommand
           term.write(historyCommand)
         } else if (historyIndexRef.current === 0) {
           historyIndexRef.current = -1
-          term.write("\r" + PROMPT_PLAIN + " ".repeat(inputBufferRef.current.length) + "\r" + PROMPT)
+          term.write("\r" + " ".repeat(cwdRef.current.length + PROMPT_PLAIN.length + inputBufferRef.current.length + 2) + "\r" + getCurrentPrompt())
           inputBufferRef.current = ""
         }
         return
@@ -238,14 +296,13 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
 
       if (data === "\r") {
         // Enter key - execute command
-        term.write("\r\n")
         const command = inputBufferRef.current.trim()
         inputBufferRef.current = ""
-        
+
         if (command !== "") {
           executeCommand(command, term)
         } else {
-          term.write(PROMPT)
+          term.write("\r\n" + getCurrentPrompt())
         }
       } else if (data === "\u007F" || data === "\b") {
         // Backspace
@@ -258,13 +315,13 @@ export default function TerminalView({ onClose }: TerminalViewProps) {
         if (isExecutingRef.current) {
           webContainerService.killCurrentProcess()
         }
-        term.write("\x1b[38;2;140;140;160m^C\x1b[0m\r\n" + PROMPT)
+        term.write("\x1b[38;2;140;140;160m^C\x1b[0m\r\n" + getCurrentPrompt())
         inputBufferRef.current = ""
         historyIndexRef.current = -1
       } else if (data === "\u000C") {
         // Ctrl+L - clear screen
         term.clear()
-        term.write(PROMPT + inputBufferRef.current)
+        term.write(getCurrentPrompt() + inputBufferRef.current)
       } else if (data.charCodeAt(0) >= 32 && !isExecutingRef.current) {
         // Regular printable character
         inputBufferRef.current += data
