@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Editor from "@monaco-editor/react"
-import { X, Folder, File, ChevronRight, RefreshCw, Save } from "lucide-react"
+import { X, Folder, File, ChevronRight, RefreshCw, Save, FilePlus, FolderPlus, Trash2 } from "lucide-react"
 import { useFilesystemStore } from "@/lib/stores/filesystem-store"
 import { FileNode } from "@/lib/unified-filesystem"
 
@@ -125,9 +125,9 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
         return nodes.map((node) => (
             <div key={node.path}>
                 <div
-                    className={`flex items-center gap-1 px-2 py-1.5 text-sm cursor-pointer hover:bg-[#2A2A2A] transition-colors ${node.type === "file" && activeFilePath === node.path
-                            ? "bg-[#2A2A2A] text-[#DDAED3]"
-                            : "text-[#A4A4A4]"
+                    className={`group flex items-center gap-1 px-2 py-1.5 text-sm cursor-pointer hover:bg-[#2A2A2A] transition-colors ${node.type === "file" && activeFilePath === node.path
+                        ? "bg-[#2A2A2A] text-[#DDAED3]"
+                        : "text-[#A4A4A4]"
                         }`}
                     style={{ paddingLeft: `${8 + depth * 16}px` }}
                     onClick={() => handleFileClick(node)}
@@ -147,7 +147,19 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                             <File className="w-4 h-4 text-[#7C7D7D]" />
                         </>
                     )}
-                    <span className="truncate">{node.name}</span>
+                    <span className="truncate flex-1">{node.name}</span>
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            if (confirm(`Delete ${node.name}?`)) {
+                                deleteNode(node.path)
+                            }
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#3D3D3D] rounded text-[#7C7D7D] hover:text-red-400 transition-opacity"
+                        title="Delete"
+                    >
+                        <Trash2 className="w-3 h-3" />
+                    </button>
                 </div>
                 {node.type === "directory" &&
                     expandedFolders.has(node.path) &&
@@ -169,13 +181,35 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                             <Folder className="w-4 h-4" />
                             Files
                         </span>
-                        <button
-                            onClick={refreshFileTree}
-                            className="p-1 hover:bg-[#2A2A2A] rounded text-[#7C7D7D] hover:text-white transition-colors"
-                            title="Refresh"
-                        >
-                            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <button
+                                onClick={() => {
+                                    setCreateParentPath("/")
+                                    setIsCreatingFile(true)
+                                }}
+                                className="p-1 hover:bg-[#2A2A2A] rounded text-[#7C7D7D] hover:text-white transition-colors"
+                                title="New File"
+                            >
+                                <FilePlus className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setCreateParentPath("/")
+                                    setIsCreatingFolder(true)
+                                }}
+                                className="p-1 hover:bg-[#2A2A2A] rounded text-[#7C7D7D] hover:text-white transition-colors"
+                                title="New Folder"
+                            >
+                                <FolderPlus className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                                onClick={refreshFileTree}
+                                className="p-1 hover:bg-[#2A2A2A] rounded text-[#7C7D7D] hover:text-white transition-colors"
+                                title="Refresh"
+                            >
+                                <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+                            </button>
+                        </div>
                     </div>
 
                     {/* File Tree */}
@@ -306,8 +340,8 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                             <div
                                 key={file.path}
                                 className={`flex items-center gap-2 px-3 py-2 rounded-t text-sm cursor-pointer transition-colors whitespace-nowrap ${activeFilePath === file.path
-                                        ? "bg-[#1E1E1E] text-white border-b-2 border-[#DDAED3]"
-                                        : "bg-[#2A2A2A] text-[#A4A4A4] hover:text-white"
+                                    ? "bg-[#1E1E1E] text-white border-b-2 border-[#DDAED3]"
+                                    : "bg-[#2A2A2A] text-[#A4A4A4] hover:text-white"
                                     }`}
                                 onClick={() => setActiveFile(file.path)}
                             >
