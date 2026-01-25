@@ -5,7 +5,7 @@
  * Supports multiple providers and structured response parsing.
  */
 
-import { AgentResponse, Message, LLMConfig } from './types';
+import { AgentResponse, Message, LLMConfig } from '@/lib/agent/types';
 
 // ============================================================================
 // Types

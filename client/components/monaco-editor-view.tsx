@@ -151,9 +151,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                     <button
                         onClick={(e) => {
                             e.stopPropagation()
-                            if (confirm(`Delete ${node.name}?`)) {
-                                deleteNode(node.path)
-                            }
+                            handleDeleteClick(node.path, node.name)
                         }}
                         className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-[#3D3D3D] rounded text-[#7C7D7D] hover:text-red-400 transition-opacity"
                         title="Delete"
@@ -169,8 +167,49 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
         ))
     }
 
+    // Confirm Delete Modal
+    const [deleteConfirm, setDeleteConfirm] = useState<{ path: string, name: string } | null>(null)
+
+    const handleDeleteClick = (path: string, name: string) => {
+        setDeleteConfirm({ path, name })
+    }
+
+    const confirmDelete = async () => {
+        if (deleteConfirm) {
+            await deleteNode(deleteConfirm.path)
+            setDeleteConfirm(null)
+        }
+    }
+
     return (
-        <div className="w-full h-full bg-[#1E1E1E] flex flex-col border-0">
+        <div className="w-full h-full bg-[#1E1E1E] flex flex-col border-0 relative">
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-[#1E1E1E] border border-[#2A2A2A] rounded-lg shadow-xl w-80 p-4 transform transition-all scale-100 opacity-100">
+                        <h3 className="text-white font-medium mb-2">Delete File?</h3>
+                        <p className="text-[#A4A4A4] text-sm mb-4">
+                            Are you sure you want to delete <span className="text-white font-mono">{deleteConfirm.name}</span>?
+                            This action cannot be undone.
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="px-3 py-1.5 rounded text-sm text-[#A4A4A4] hover:text-white hover:bg-[#2A2A2A] transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-3 py-1.5 rounded text-sm bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 transition-colors"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Main Content Area */}
             <div className="flex flex-1 overflow-hidden">
                 {/* Left Sidebar - File Manager */}
@@ -319,7 +358,7 @@ export default function MonacoEditorView({ onClose }: MonacoEditorViewProps) {
                                     </button>
                                     <button
                                         onClick={() => {
-                                            deleteNode(contextMenu.node!.path)
+                                            handleDeleteClick(contextMenu.node!.path, contextMenu.node!.name)
                                             setContextMenu(null)
                                         }}
                                         className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#353535] hover:text-red-300 transition-colors"

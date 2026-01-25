@@ -69,8 +69,8 @@ export default function ChatInterface({ onCommandExecute }: ChatInterfaceProps) 
             >
                 {/* Avatar */}
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${isUser
-                        ? "bg-gradient-to-br from-purple-500 to-pink-500"
-                        : "bg-gradient-to-br from-blue-500 to-cyan-500"
+                    ? "bg-gradient-to-br from-purple-500 to-pink-500"
+                    : "bg-gradient-to-br from-blue-500 to-cyan-500"
                     }`}>
                     {isUser ? (
                         <span className="text-white text-xs font-medium">U</span>
@@ -82,8 +82,8 @@ export default function ChatInterface({ onCommandExecute }: ChatInterfaceProps) 
                 {/* Content */}
                 <div className={`flex-1 max-w-[80%] ${isUser ? "text-right" : ""}`}>
                     <div className={`inline-block rounded-lg px-4 py-3 ${isUser
-                            ? "bg-[#2A2A2A] text-white"
-                            : "bg-[#1A1A1A] border border-[#2A2A2A] text-[#E6E6E6]"
+                        ? "bg-[#2A2A2A] text-white"
+                        : "bg-[#1A1A1A] border border-[#2A2A2A] text-[#E6E6E6]"
                         }`}>
                         {/* Streaming indicator */}
                         {message.isStreaming && !message.content && (
@@ -112,10 +112,10 @@ export default function ChatInterface({ onCommandExecute }: ChatInterfaceProps) 
                                             className="flex items-center gap-2 text-xs"
                                         >
                                             <span className={`px-1.5 py-0.5 rounded ${op.type === "create"
-                                                    ? "bg-green-500/20 text-green-400"
-                                                    : op.type === "modify"
-                                                        ? "bg-yellow-500/20 text-yellow-400"
-                                                        : "bg-red-500/20 text-red-400"
+                                                ? "bg-green-500/20 text-green-400"
+                                                : op.type === "modify"
+                                                    ? "bg-yellow-500/20 text-yellow-400"
+                                                    : "bg-red-500/20 text-red-400"
                                                 }`}>
                                                 {op.type === "create" ? "+" : op.type === "modify" ? "~" : "-"}
                                             </span>

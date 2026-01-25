@@ -5,16 +5,16 @@
  * Handles prompt processing, context building, and action execution.
  */
 
-import { unifiedFS, FileNode } from '../unified-filesystem';
-import { useProjectStore, TechStack, Project } from '../stores/project-store';
-import { llmClient } from './llm-client';
+import { unifiedFS, FileNode } from '@/lib/unified-filesystem';
+import { useProjectStore, TechStack, Project } from '@/lib/stores/project-store';
+import { llmClient } from '@/lib/agent/llm-client';
 import {
     Message,
     AgentEvent,
     AgentEventType,
     AgentResponse,
     FileOperation
-} from './types';
+} from '@/lib/agent/types';
 
 // Re-export types
 export type { AgentEvent, AgentEventType, AgentResponse, FileOperation };
