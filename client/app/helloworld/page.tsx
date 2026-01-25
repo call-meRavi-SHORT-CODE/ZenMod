@@ -188,9 +188,7 @@ export default function HelloworldPage() {
                     {/* Editor Toolbar */}
                     <div className="h-10 border-b border-[#2A2A2A] flex items-center justify-between px-4 flex-shrink-0">
                         <div className="flex items-center gap-2">
-                            <button className="p-1 hover:bg-[#1A1A1A] rounded">
-                                <ArrowLeft className="w-4 h-4" />
-                            </button>
+
                             <button
                                 className={`p-1 hover:bg-[#1A1A1A] rounded border ${!showMonacoEditor ? "border-[#DDAED3]" : "border-[#2A2A2A]"}`}
                                 onClick={() => setShowMonacoEditor(false)}
