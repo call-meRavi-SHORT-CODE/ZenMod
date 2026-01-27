@@ -17,7 +17,7 @@ import { appConfig } from '@/config/app.config';
 console.log('[generate-ai-code-stream] GROQ_API_KEY loaded:', process.env.GROQ_API_KEY ? `Yes (${process.env.GROQ_API_KEY.substring(0, 8)}...)` : 'No');
 
 const groq = createGroq({
-  apiKey: "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",
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 const anthropic = createAnthropic({
@@ -34,7 +34,7 @@ const openai = createOpenAI({
 });
 
 const deepseek = createOpenAI({
-  apiKey: "sk-37611924914f40e58f5f89d1f3551c0f",
+  apiKey: process.env.DEEPSEEK_API_KEY,
   baseURL: 'https://api.deepseek.com',
 });
 
