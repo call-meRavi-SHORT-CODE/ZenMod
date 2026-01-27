@@ -8,12 +8,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-zinc-900 text-white hover:bg-zinc-800 [box-shadow:inset_0px_-2px_0px_0px_#18181b,_0px_1px_6px_0px_rgba(24,_24,_27,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#18181b,_0px_1px_3px_0px_rgba(24,_24,_27,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#18181b,_0px_1px_2px_0px_rgba(24,_24,_27,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
-        secondary: "bg-zinc-100 text-zinc-900 hover:bg-zinc-200 [box-shadow:inset_0px_-2px_0px_0px_#d4d4d8,_0px_1px_6px_0px_rgba(161,_161,_170,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#d4d4d8,_0px_1px_3px_0px_rgba(161,_161,_170,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#d4d4d8,_0px_1px_2px_0px_rgba(161,_161,_170,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
-        outline: "border border-zinc-300 bg-transparent hover:bg-zinc-50 text-zinc-900 [box-shadow:inset_0px_-2px_0px_0px_#e4e4e7,_0px_1px_6px_0px_rgba(228,_228,_231,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#e4e4e7,_0px_1px_3px_0px_rgba(228,_228,_231,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#e4e4e7,_0px_1px_2px_0px_rgba(228,_228,_231,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
-        destructive: "bg-red-500 text-white hover:bg-red-600 [box-shadow:inset_0px_-2px_0px_0px_#dc2626,_0px_1px_6px_0px_rgba(239,_68,_68,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#dc2626,_0px_1px_3px_0px_rgba(239,_68,_68,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#dc2626,_0px_1px_2px_0px_rgba(239,_68,_68,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
-        code: "bg-[#36322F] text-white hover:bg-[#4a4542] [box-shadow:inset_0px_-2px_0px_0px_#171310,_0px_1px_6px_0px_rgba(58,_33,_8,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#171310,_0px_1px_3px_0px_rgba(58,_33,_8,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#171310,_0px_1px_2px_0px_rgba(58,_33,_8,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
-        orange: "bg-orange-500 text-white hover:bg-orange-600 [box-shadow:inset_0px_-2px_0px_0px_#c2410c,_0px_1px_6px_0px_rgba(234,_88,_12,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#c2410c,_0px_1px_3px_0px_rgba(234,_88,_12,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#c2410c,_0px_1px_2px_0px_rgba(234,_88,_12,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100",
+        default: "bg-primary text-primary-foreground hover:opacity-90 [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.1),_0px_1px_6px_0px_rgba(0,0,0,0.1)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.05),_0px_1px_6px_0px_rgba(0,0,0,0.05)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
+        outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground text-foreground [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.03),_0px_1px_6px_0px_rgba(0,0,0,0.03)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all duration-200",
+        code: "bg-[#36322F] dark:bg-zinc-800 text-white hover:opacity-90 transition-all duration-200",
+        orange: "bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200",
         ghost: "hover:bg-accent hover:text-accent-foreground",
       },
       size: {
@@ -31,7 +31,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

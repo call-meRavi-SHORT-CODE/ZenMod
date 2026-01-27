@@ -1,8 +1,8 @@
-# Sokarr.ai
+# ZenMod.ai
 
 Chat with AI to build React apps instantly.
 
-<img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmZtaHFleGRsMTNlaWNydGdianI4NGQ4dHhyZjB0d2VkcjRyeXBucCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZFVLWMa6dVskQX0qu1/giphy.gif" alt="Sokarr.ai Demo" width="100%"/>
+<img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmZtaHFleGRsMTNlaWNydGdianI4NGQ4dHhyZjB0d2VkcjRyeXBucCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ZFVLWMa6dVskQX0qu1/giphy.gif" alt="ZenMod.ai Demo" width="100%"/>
 
 ## Features
 
@@ -39,7 +39,7 @@ Create a `.env.local` file in the root of the project and add the following envi
 ```env
 # Required
 E2B_API_KEY=your_e2b_api_key  # Get from https://e2b.dev (Sandboxes)
-FIRECRAWL_API_KEY=your_firecrawl_api_key  # Get from https://firecrawl.dev (Web scraping)
+FIRECRAWL_API_KEY=your_firecrawl_api_key  # Get from https://zenmod.ai (Web scraping)
 
 # Optional (need at least one AI provider)
 ANTHROPIC_API_KEY=your_anthropic_api_key  # Get from https://console.anthropic.com

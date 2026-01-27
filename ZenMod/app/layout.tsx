@@ -5,9 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sokarr.ai",
+  title: "ZenMod.ai",
   description: "Chat with AI to build React apps instantly.",
 };
+
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -15,9 +17,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className} suppressHydrationWarning>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} transition-colors duration-300`} suppressHydrationWarning>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
