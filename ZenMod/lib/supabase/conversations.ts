@@ -5,7 +5,7 @@ export async function getConversation(userId: string) {
     .from('conversations')
     .select('*')
     .eq('user_id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) {
     console.error('Error getting conversation:', error);

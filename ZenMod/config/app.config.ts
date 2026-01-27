@@ -6,114 +6,126 @@ export const appConfig = {
   e2b: {
     // Sandbox timeout in minutes
     timeoutMinutes: 15,
-    
+
     // Convert to milliseconds for E2B API
     get timeoutMs() {
       return this.timeoutMinutes * 60 * 1000;
     },
-    
+
     // Vite development server port
     vitePort: 5173,
-    
+
     // Time to wait for Vite to be ready (in milliseconds)
     viteStartupDelay: 7000,
-    
+
     // Time to wait for CSS rebuild (in milliseconds)
     cssRebuildDelay: 2000,
-    
+
     // Default sandbox template (if using templates)
     defaultTemplate: undefined, // or specify a template ID
   },
-  
+
   // AI Model Configuration
   ai: {
     // Default AI model
     defaultModel: 'moonshotai/kimi-k2-instruct',
-    
+
     // Available models
     availableModels: [
       'openai/gpt-5',
       'moonshotai/kimi-k2-instruct',
+      'moonshotai/kimi-k2-instruct-0905',
       'anthropic/claude-sonnet-4-20250514',
-      'google/gemini-2.5-pro'
+      'google/gemini-2.5-pro',
+      'google/gemini-1.5-flash',
+      'groq/llama-3.3-70b-versatile',
+      'groq/llama-3.1-8b-instant',
+      'deepseek/deepseek-chat',
+      'deepseek/deepseek-reasoner'
     ],
-    
+
     // Model display names
     modelDisplayNames: {
       'openai/gpt-5': 'GPT-5',
       'moonshotai/kimi-k2-instruct': 'Kimi K2 Instruct',
+      'moonshotai/kimi-k2-instruct-0905': 'Kimi K2 Instruct 0905 (Groq)',
       'anthropic/claude-sonnet-4-20250514': 'Sonnet 4',
-      'google/gemini-2.5-pro': 'Gemini 2.5 Pro'
+      'google/gemini-2.5-pro': 'Gemini 2.5 Pro',
+      'google/gemini-1.5-flash': 'Gemini 1.5 Flash (Fast & Large Context)',
+      'groq/llama-3.3-70b-versatile': 'Llama 3.3 70B (Groq)',
+      'groq/llama-3.1-8b-instant': 'Llama 3.1 8B Fast (Groq)',
+      'deepseek/deepseek-chat': 'DeepSeek V3',
+      'deepseek/deepseek-reasoner': 'DeepSeek R1 (Reasoning)'
     },
-    
+
     // Temperature settings for non-reasoning models
     defaultTemperature: 0.7,
-    
+
     // Max tokens for code generation
     maxTokens: 8000,
-    
+
     // Max tokens for truncation recovery
     truncationRecoveryMaxTokens: 4000,
   },
-  
+
   // Code Application Configuration
   codeApplication: {
     // Delay after applying code before refreshing iframe (milliseconds)
     defaultRefreshDelay: 2000,
-    
+
     // Delay when packages are installed (milliseconds)
     packageInstallRefreshDelay: 5000,
-    
+
     // Enable/disable automatic truncation recovery
     enableTruncationRecovery: false, // Disabled - too many false positives
-    
+
     // Maximum number of truncation recovery attempts per file
     maxTruncationRecoveryAttempts: 1,
   },
-  
+
   // UI Configuration
   ui: {
     // Show/hide certain UI elements
     showModelSelector: true,
     showStatusIndicator: true,
-    
+
     // Animation durations (milliseconds)
     animationDuration: 200,
-    
+
     // Toast notification duration (milliseconds)
     toastDuration: 3000,
-    
+
     // Maximum chat messages to keep in memory
     maxChatMessages: 100,
-    
+
     // Maximum recent messages to send as context
     maxRecentMessagesContext: 20,
   },
-  
+
   // Development Configuration
   dev: {
     // Enable debug logging
     enableDebugLogging: true,
-    
+
     // Enable performance monitoring
     enablePerformanceMonitoring: false,
-    
+
     // Log API responses
     logApiResponses: true,
   },
-  
+
   // Package Installation Configuration
   packages: {
     // Use --legacy-peer-deps flag for npm install
     useLegacyPeerDeps: true,
-    
+
     // Package installation timeout (milliseconds)
     installTimeout: 60000,
-    
+
     // Auto-restart Vite after package installation
     autoRestartVite: true,
   },
-  
+
   // File Management Configuration
   files: {
     // Excluded file patterns (files to ignore)
@@ -126,10 +138,10 @@ export const appConfig = {
       '*.log',
       '.DS_Store'
     ],
-    
+
     // Maximum file size to read (bytes)
     maxFileSize: 1024 * 1024, // 1MB
-    
+
     // File extensions to treat as text
     textFileExtensions: [
       '.js', '.jsx', '.ts', '.tsx',
@@ -140,13 +152,13 @@ export const appConfig = {
       '.gitignore', '.dockerignore'
     ],
   },
-  
+
   // API Endpoints Configuration (for external services)
   api: {
     // Retry configuration
     maxRetries: 3,
     retryDelay: 1000, // milliseconds
-    
+
     // Request timeout (milliseconds)
     requestTimeout: 30000,
   }
