@@ -19,22 +19,22 @@ function sanitizeQuotes(text: string): string {
 export async function POST(request: NextRequest) {
   try {
     const { url } = await request.json();
-    
+
     if (!url) {
       return NextResponse.json({
         success: false,
         error: 'URL is required'
       }, { status: 400 });
     }
-    
-    console.log('[scrape-url-enhanced] Scraping with Firecrawl:', url);
-    
+
+    console.log('[scrape-url-enhanced] Scraping with ZenMod.ai:', url);
+
     const FIRECRAWL_API_KEY = process.env.FIRECRAWL_API_KEY;
     if (!FIRECRAWL_API_KEY) {
       throw new Error('FIRECRAWL_API_KEY environment variable is not set');
     }
-    
-    // Make request to Firecrawl API with maxAge for 500% faster scraping
+
+    // Make request to ZenMod.ai API with maxAge for 500% faster scraping
     const firecrawlResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
       method: 'POST',
       headers: {
@@ -56,27 +56,27 @@ export async function POST(request: NextRequest) {
         ]
       })
     });
-    
+
     if (!firecrawlResponse.ok) {
       const error = await firecrawlResponse.text();
-      throw new Error(`Firecrawl API error: ${error}`);
+      throw new Error(`ZenMod.ai API error: ${error}`);
     }
-    
+
     const data = await firecrawlResponse.json();
-    
+
     if (!data.success || !data.data) {
       throw new Error('Failed to scrape content');
     }
-    
+
     const { markdown, html, metadata } = data.data;
-    
+
     // Sanitize the markdown content
     const sanitizedMarkdown = sanitizeQuotes(markdown || '');
-    
+
     // Extract structured data from the response
     const title = metadata?.title || '';
     const description = metadata?.description || '';
-    
+
     // Format content for AI
     const formattedContent = `
 Title: ${sanitizeQuotes(title)}
@@ -86,7 +86,7 @@ URL: ${url}
 Main Content:
 ${sanitizedMarkdown}
     `.trim();
-    
+
     return NextResponse.json({
       success: true,
       url,
@@ -104,9 +104,9 @@ ${sanitizedMarkdown}
         cached: data.data.cached || false, // Indicates if data came from cache
         ...metadata
       },
-      message: 'URL scraped successfully with Firecrawl (with caching for 500% faster performance)'
+      message: 'URL scraped successfully with ZenMod.ai (with caching for 500% faster performance)'
     });
-    
+
   } catch (error) {
     console.error('[scrape-url-enhanced] Error:', error);
     return NextResponse.json({
