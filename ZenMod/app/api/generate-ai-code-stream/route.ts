@@ -13,8 +13,11 @@ import { FileManifest } from '@/types/file-manifest';
 import type { ConversationState, ConversationMessage, ConversationEdit } from '@/types/conversation';
 import { appConfig } from '@/config/app.config';
 
+// Debug: Log if GROQ_API_KEY is set (without revealing the actual key)
+console.log('[generate-ai-code-stream] GROQ_API_KEY loaded:', process.env.GROQ_API_KEY ? `Yes (${process.env.GROQ_API_KEY.substring(0, 8)}...)` : 'No');
+
 const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: "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",
 });
 
 const anthropic = createAnthropic({
@@ -28,6 +31,11 @@ const googleGenerativeAI = createGoogleGenerativeAI({
 
 const openai = createOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+const deepseek = createOpenAI({
+  apiKey: "sk-37611924914f40e58f5f89d1f3551c0f",
+  baseURL: 'https://api.deepseek.com',
 });
 
 // Helper function to analyze user preferences from conversation history
@@ -79,7 +87,9 @@ export async function POST(request: NextRequest) {
     const { prompt, model = 'openai/gpt-oss-20b', context, isEdit = false } = await request.json();
 
     console.log('[generate-ai-code-stream] Received request:');
-    console.log('[generate-ai-code-stream] - prompt:', prompt);
+    console.log('[generate-ai-code-stream] - model:', model);
+    console.log('[generate-ai-code-stream] - GROQ_API_KEY present:', !!process.env.GROQ_API_KEY);
+    console.log('[generate-ai-code-stream] - GROQ_API_KEY prefix:', process.env.GROQ_API_KEY?.substring(0, 10));
     console.log('[generate-ai-code-stream] - isEdit:', isEdit);
     console.log('[generate-ai-code-stream] - context.sandboxId:', context?.sandboxId);
     console.log('[generate-ai-code-stream] - context.currentFiles:', context?.currentFiles ? Object.keys(context.currentFiles) : 'none');
@@ -1128,10 +1138,48 @@ CRITICAL: When files are provided in the context:
         const isAnthropic = model.startsWith('anthropic/');
         const isGoogle = model.startsWith('google/');
         const isOpenAI = model.startsWith('openai/gpt-5');
-        const modelProvider = isAnthropic ? anthropic : (isOpenAI ? openai : (isGoogle ? googleGenerativeAI : groq));
+        const isGroq = model.startsWith('groq/');
+        const isDeepSeek = model.startsWith('deepseek/');
+        const isMoonshot = model.startsWith('moonshotai/');
+
+        const modelProvider = isAnthropic ? anthropic :
+          (isOpenAI ? openai :
+            (isGoogle ? googleGenerativeAI :
+              (isDeepSeek ? deepseek : groq)));
+
         const actualModel = isAnthropic ? model.replace('anthropic/', '') :
           (model === 'openai/gpt-5') ? 'gpt-5' :
-            (isGoogle ? model.replace('google/', '') : model);
+            (isGoogle ? model.replace('google/', '') :
+              (isGroq ? model.replace('groq/', '') :
+                (isDeepSeek ? model.replace('deepseek/', '') : model)));
+
+        // AGGRESSIVE CONTEXT TRUNCATION FOR GROQ/MOONSHOT (Strict TPM limits)
+        let processedMessages = messages;
+        if (isGroq || isMoonshot) {
+          console.log('[generate-ai-code-stream] Truncating context for Groq/Moonshot limits...');
+          processedMessages = messages.map((m: ConversationMessage, idx: number) => {
+            // Keep the core intent but trim the massive data
+            if (m.role === 'user' && m.content.length > 5000) {
+              const content = m.content;
+              // If it's a scraping request, keep the header and footer instructions but trim the middle
+              if (content.includes('SCRAPED CONTENT')) {
+                const parts = content.split('SCRAPED CONTENT:');
+                const head = parts[0];
+                const tail = content.substring(content.lastIndexOf('USER REQUEST:'));
+                const body = parts[1] ? parts[1].substring(0, 2000) : '';
+                return { ...m, content: `${head}\nSCRAPED CONTENT (TRUNCATED):\n${body}\n...\n${tail}` };
+              }
+              // Normal large content
+              return { ...m, content: content.substring(0, 4000) + '\n... [Content truncated for API limits]' };
+            }
+            return m;
+          });
+
+          // Only keep last 2 messages for Groq to save tokens
+          if (processedMessages.length > 2) {
+            processedMessages = processedMessages.slice(-2);
+          }
+        }
 
         // Make streaming API call with appropriate provider
         const streamOptions: any = {
@@ -1175,7 +1223,7 @@ Examples of CORRECT CODE (ALWAYS DO THIS):
 
 REMEMBER: It's better to generate fewer COMPLETE files than many INCOMPLETE files.`
             },
-            ...messages.map((m: ConversationMessage) => ({ role: m.role as "user" | "assistant", content: m.content })),
+            ...processedMessages.map((m: ConversationMessage) => ({ role: m.role as "user" | "assistant", content: m.content })),
           ],
           maxTokens: 8192, // Reduce to ensure completion
           stopSequences: [] // Don't stop early
