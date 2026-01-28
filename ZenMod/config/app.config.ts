@@ -28,16 +28,14 @@ export const appConfig = {
   // AI Model Configuration
   ai: {
     // Default AI model
-    defaultModel: 'moonshotai/kimi-k2-instruct',
+    defaultModel: 'moonshotai/kimi-k2-instruct-0905',
 
     // Available models
     availableModels: [
+      'moonshotai/kimi-k2-instruct-0905',
       'openai/gpt-5',
       'moonshotai/kimi-k2-instruct',
-      'moonshotai/kimi-k2-instruct-0905',
       'anthropic/claude-sonnet-4-20250514',
-      'google/gemini-2.5-pro',
-      'google/gemini-1.5-flash',
       'groq/llama-3.3-70b-versatile',
       'groq/llama-3.1-8b-instant',
       'deepseek/deepseek-chat',
@@ -50,8 +48,6 @@ export const appConfig = {
       'moonshotai/kimi-k2-instruct': 'Kimi K2 Instruct',
       'moonshotai/kimi-k2-instruct-0905': 'Kimi K2 Instruct 0905 (Groq)',
       'anthropic/claude-sonnet-4-20250514': 'Sonnet 4',
-      'google/gemini-2.5-pro': 'Gemini 2.5 Pro',
-      'google/gemini-1.5-flash': 'Gemini 1.5 Flash (Fast & Large Context)',
       'groq/llama-3.3-70b-versatile': 'Llama 3.3 70B (Groq)',
       'groq/llama-3.1-8b-instant': 'Llama 3.1 8B Fast (Groq)',
       'deepseek/deepseek-chat': 'DeepSeek V3',

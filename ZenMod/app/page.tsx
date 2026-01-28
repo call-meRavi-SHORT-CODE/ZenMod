@@ -23,7 +23,8 @@ import {
   SiJavascript,
   SiReact,
   SiCss3,
-  SiJson
+  SiJson,
+  FaWindows
 } from '@/lib/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 import CodeApplicationProgress, { type CodeApplicationState } from '@/components/CodeApplicationProgress';
@@ -757,11 +758,11 @@ Tip: I automatically detect and install npm packages from your code imports (lik
           }
 
           log('Code applied successfully!');
-          console.log('[applyGeneratedCode] Response data:', data);
-          console.log('[applyGeneratedCode] Debug info:', data.debug);
-          console.log('[applyGeneratedCode] Current sandboxData:', sandboxData);
-          console.log('[applyGeneratedCode] Current iframe element:', iframeRef.current);
-          console.log('[applyGeneratedCode] Current iframe src:', iframeRef.current?.src);
+          // console.log('[applyGeneratedCode] Response data:', data);
+          // console.log('[applyGeneratedCode] Debug info:', data.debug);
+          // console.log('[applyGeneratedCode] Current sandboxData:', sandboxData);
+          // console.log('[applyGeneratedCode] Current iframe element:', iframeRef.current);
+          // console.log('[applyGeneratedCode] Current iframe src:', iframeRef.current?.src);
 
           if (results && results.filesCreated?.length > 0) {
             setConversationContext(prev => ({
@@ -1579,9 +1580,9 @@ Tip: I automatically detect and install npm packages from your code imports (lik
       };
 
       // Debug what we're sending
-      console.log('[chat] Sending context to AI:');
-      console.log('[chat] - sandboxId:', fullContext.sandboxId);
-      console.log('[chat] - isEdit:', conversationContext.appliedCode.length > 0);
+      // console.log('[chat] Sending context to AI:');
+      // console.log('[chat] - sandboxId:', fullContext.sandboxId);
+      // console.log('[chat] - isEdit:', conversationContext.appliedCode.length > 0);
 
       const response = await fetch('/api/generate-ai-code-stream', {
         method: 'POST',
@@ -2300,8 +2301,8 @@ Focus on the key sections and content, making it clean and modern while preservi
           'ai',
           {
             scrapedUrl: url,
-            scrapedContent: scrapeData,
-            generatedCode: generatedCode
+            scrapedContent: scrapeData
+            // generatedCode removed to prevent printing code in chat
           }
         );
 
@@ -2781,26 +2782,8 @@ Focus on the key sections and content, making it clean and modern.`;
       {showHomeScreen && (
         <div className={`fixed inset-0 z-50 transition-opacity duration-500 ${homeScreenFading ? 'opacity-0' : 'opacity-100'}`}>
           {/* Simple Sun Gradient Background */}
-          <div className="absolute inset-0 bg-background overflow-hidden transition-colors duration-500">
-            {/* Main Sun - Pulsing */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-orange-400/50 via-orange-300/30 to-transparent rounded-full blur-[80px] animate-[sunPulse_4s_ease-in-out_infinite]" />
-
-            {/* Inner Sun Core - Brighter */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-yellow-300/40 via-orange-400/30 to-transparent rounded-full blur-[40px] animate-[sunPulse_4s_ease-in-out_infinite_0.5s]" />
-
-            {/* Outer Glow - Subtle */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[1200px] bg-gradient-radial from-orange-200/20 to-transparent rounded-full blur-[120px]" />
-
-            {/* Giant Glowing Orb - Center Bottom */}
-            <div className="absolute bottom-0 left-1/2 w-[800px] h-[800px] animate-[orbShrink_3s_ease-out_forwards]" style={{ transform: 'translateX(-50%) translateY(45%)' }}>
-              <div className="relative w-full h-full">
-                <div className="absolute inset-0 bg-orange-600 rounded-full blur-[100px] opacity-30 animate-pulse"></div>
-                <div className="absolute inset-16 bg-orange-500 rounded-full blur-[80px] opacity-40 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
-                <div className="absolute inset-32 bg-orange-400 rounded-full blur-[60px] opacity-50 animate-pulse" style={{ animationDelay: '0.6s' }}></div>
-                <div className="absolute inset-48 bg-yellow-300 rounded-full blur-[40px] opacity-60"></div>
-              </div>
-            </div>
-          </div>
+          {/* Clean Background with Dots */}
+          <div className="absolute inset-0 bg-background/95"></div>
 
 
           {/* Close button on hover */}
@@ -2825,72 +2808,77 @@ Focus on the key sections and content, making it clean and modern.`;
           {/* Header */}
           <div className="absolute top-0 left-0 right-0 z-20 px-6 py-4 flex items-center justify-between animate-[fadeIn_0.8s_ease-out]">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xl font-bold text-white">
+              <div className="w-8 h-8 rounded-full bg-black/90 dark:bg-white/90 flex items-center justify-center text-sm font-bold text-white dark:text-black">
                 Z
               </div>
+              <span className="text-lg font-semibold tracking-tight">ZenMod.ai</span>
             </div>
+
+            {/* Centered Navigation */}
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+              <a href="#" className="hover:text-foreground transition-colors">Product</a>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors group">
+                Use Cases <FiChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+              </div>
+              <a href="#" className="hover:text-foreground transition-colors">Pricing</a>
+              <a href="#" className="hover:text-foreground transition-colors">Blog</a>
+              <div className="flex items-center gap-1 cursor-pointer hover:text-foreground transition-colors group">
+                Resources <FiChevronDown className="w-3 h-3 transition-transform group-hover:rotate-180" />
+              </div>
+            </div>
+
             <div className="flex items-center gap-3">
               <ThemeToggle />
+              <Button
+                variant="default"
+                className="rounded-full px-6 bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/90"
+                onClick={() => !session && supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: { redirectTo: `${window.location.origin}/auth/callback` }
+                })}
+              >
+                {session ? 'Log In' : 'Log In'}
+              </Button>
             </div>
           </div>
 
           {/* Main content */}
-          <div className="relative z-10 h-full flex items-center justify-center px-4">
-            <div className="text-center max-w-4xl min-w-[600px] mx-auto">
+          <div className="relative z-10 h-full flex items-center justify-center px-4 bg-background/50 backdrop-blur-[2px]">
+            {/* speckle background effect */}
+            <div className="absolute inset-0 z-[-1] opacity-[0.4]"
+              style={{
+                backgroundImage: 'radial-gradient(#A1A1AA 1px, transparent 1px)',
+                backgroundSize: '32px 32px'
+              }}
+            />
+
+            <div className="text-center max-w-5xl min-w-[600px] mx-auto pt-20">
               {/* ZenMod-style Header */}
-              <div className="text-center">
-                <h1 className="text-[2.5rem] lg:text-[3.8rem] text-center text-foreground font-semibold tracking-tight leading-[0.9] overflow-hidden">
-                  <span className="hidden md:inline flex justify-center">
-                    {"ZenMod.ai".split("").map((char, i) => (
-                      <motion.span
-                        key={i}
-                        custom={i}
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        transition={{
-                          duration: 0.8,
-                          ease: [0.22, 1, 0.36, 1],
-                          delay: i * 0.1,
-                        }}
-                        className="inline-block"
-                      >
-                        {char === " " ? "\u00A0" : char}
-                      </motion.span>
-                    ))}
-                  </span>
-                  <span className="md:hidden flex justify-center">
-                    {"ZenMod.ai".split("").map((char, i) => (
-                      <motion.span
-                        key={i}
-                        custom={i}
-                        initial={{ y: "100%" }}
-                        animate={{ y: 0 }}
-                        transition={{
-                          duration: 0.8,
-                          ease: [0.22, 1, 0.36, 1],
-                          delay: i * 0.1,
-                        }}
-                        className="inline-block"
-                      >
-                        {char === " " ? "\u00A0" : char}
-                      </motion.span>
-                    ))}
-                  </span>
+              <div className="text-center flex flex-col items-center">
+                <div className="flex items-center gap-2 mb-8 animate-[fadeIn_0.6s_ease-out]">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-orange-500"></div>
+                  <span className="text-xl text-foreground font-medium">ZenMod.ai</span>
+                </div>
+
+                <h1 className="text-[3.5rem] lg:text-[5.5rem] tracking-tight leading-[1.0] font-normal text-foreground text-center text-balance mb-8 animate-[fadeIn_0.8s_ease-out]">
+                  Experience liftoff with the<br />
+                  next-generation AI
                 </h1>
-                <motion.p
-                  className="text-base lg:text-lg max-w-lg mx-auto mt-2.5 text-muted-foreground text-center text-balance"
-                  animate={{
-                    opacity: showStyleSelector ? 0.7 : 1
-                  }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                  Transform any website in moments
-                </motion.p>
               </div>
 
-              <form onSubmit={handleHomeScreenSubmit} className="mt-5 max-w-3xl mx-auto">
+              <form onSubmit={handleHomeScreenSubmit} className="mt-8 max-w-2xl mx-auto w-full animate-[fadeIn_1.0s_ease-out]">
+                <div className="flex flex-col items-center gap-6">
+                  {/* Buttons visible before interaction */}
+                  <div className={`flex items-center gap-4 transition-all duration-300 ${homeUrlInput ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100 h-auto'}`}>
+                    
+                    
+                  </div>
+                </div>
+
+                {/* Input field - Always present but styled cleanly */}
                 <div className="w-full relative group">
                   <input
+                    id="url-input"
                     type="text"
                     value={homeUrlInput}
                     onChange={(e) => {
@@ -3074,6 +3062,7 @@ Focus on the key sections and content, making it clean and modern.`;
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {/* Model Selector - Left side */}
           <select
             value={aiModel}
@@ -3267,7 +3256,7 @@ Focus on the key sections and content, making it clean and modern.`;
                               return (
                                 <div
                                   key={`applied-${fileIdx}`}
-                                  className="inline-flex items-center gap-1 px-2 py-1 bg-[#36322F] text-white rounded-[10px] text-xs animate-fade-in-up"
+                                  className="inline-flex items-center gap-1 px-2 py-1 bg-[#101010] text-white rounded-[10px] text-xs animate-fade-in-up"
                                   style={{ animationDelay: `${fileIdx * 30}ms` }}
                                 >
                                   <span className={`inline-block w-1.5 h-1.5 rounded-full ${fileType === 'css' ? 'bg-blue-400' :
@@ -3291,7 +3280,7 @@ Focus on the key sections and content, making it clean and modern.`;
                             {generationProgress.files.map((file, fileIdx) => (
                               <div
                                 key={`complete-${fileIdx}`}
-                                className="inline-flex items-center gap-1 px-2 py-1 bg-[#36322F] text-white rounded-[10px] text-xs animate-fade-in-up"
+                                className="inline-flex items-center gap-1 px-2 py-1 bg-[#101010] text-white rounded-[10px] text-xs animate-fade-in-up"
                                 style={{ animationDelay: `${fileIdx * 30}ms` }}
                               >
                                 <span className={`inline-block w-1.5 h-1.5 rounded-full ${file.type === 'css' ? 'bg-blue-400' :
@@ -3327,7 +3316,7 @@ Focus on the key sections and content, making it clean and modern.`;
                   {generationProgress.files.map((file, idx) => (
                     <div
                       key={`file-${idx}`}
-                      className="inline-flex items-center gap-1 px-2 py-1 bg-[#36322F] text-white rounded-[10px] text-xs animate-fade-in-up"
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-[#101010] text-white rounded-[10px] text-xs animate-fade-in-up"
                       style={{ animationDelay: `${idx * 30}ms` }}
                     >
                       <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -3339,7 +3328,7 @@ Focus on the key sections and content, making it clean and modern.`;
 
                   {/* Show current file being generated */}
                   {generationProgress.currentFile && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-[#36322F]/70 text-white rounded-[10px] text-xs animate-pulse"
+                    <div className="flex items-center gap-1 px-2 py-1 bg-[#101010]/70 text-white rounded-[10px] text-xs animate-pulse"
                       style={{ animationDelay: `${generationProgress.files.length * 30}ms` }}>
                       <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       {generationProgress.currentFile.path.split('/').pop()}
@@ -3425,7 +3414,7 @@ Focus on the key sections and content, making it clean and modern.`;
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="px-4 py-2 bg-card border-b border-border flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="flex bg-[#36322F] rounded-lg p-1">
+              <div className="flex bg-[#101010] rounded-lg p-1">
                 <button
                   onClick={() => setActiveTab('generation')}
                   className={`p-2 rounded-md transition-all ${activeTab === 'generation'
@@ -3462,7 +3451,7 @@ Focus on the key sections and content, making it clean and modern.`;
                       {generationProgress.files.length} files generated
                     </div>
                   )}
-                  <div className={`inline-flex items-center justify-center whitespace-nowrap rounded-[10px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#36322F] text-white hover:bg-[#36322F] [box-shadow:inset_0px_-2px_0px_0px_#171310,_0px_1px_6px_0px_rgba(58,_33,_8,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#171310,_0px_1px_3px_0px_rgba(58,_33,_8,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#171310,_0px_1px_2px_0px_rgba(58,_33,_8,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100 h-8 px-3 py-1 text-sm gap-2`}>
+                  <div className={`inline-flex items-center justify-center whitespace-nowrap rounded-[10px] font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-[#101010] text-white hover:bg-[#101010] [box-shadow:inset_0px_-2px_0px_0px_#171310,_0px_1px_6px_0px_rgba(58,_33,_8,_58%)] hover:translate-y-[1px] hover:scale-[0.98] hover:[box-shadow:inset_0px_-1px_0px_0px_#171310,_0px_1px_3px_0px_rgba(58,_33,_8,_40%)] active:translate-y-[2px] active:scale-[0.97] active:[box-shadow:inset_0px_1px_1px_0px_#171310,_0px_1px_2px_0px_rgba(58,_33,_8,_30%)] disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100 h-8 px-3 py-1 text-sm gap-2`}>
                     {generationProgress.isGenerating ? (
                       <>
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
