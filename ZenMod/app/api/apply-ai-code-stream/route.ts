@@ -270,24 +270,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Debug log the response
-    console.log('[apply-ai-code-stream] Received response to parse:');
-    console.log('[apply-ai-code-stream] Response length:', response.length);
-    console.log('[apply-ai-code-stream] Response preview:', response.substring(0, 500));
-    console.log('[apply-ai-code-stream] isEdit:', isEdit);
-    console.log('[apply-ai-code-stream] packages:', packages);
+    // console.log('[apply-ai-code-stream] Received response to parse:');
+    // console.log('[apply-ai-code-stream] Response length:', response.length);
+    // console.log('[apply-ai-code-stream] Response preview:', response.substring(0, 500));
+    // console.log('[apply-ai-code-stream] isEdit:', isEdit);
+    // console.log('[apply-ai-code-stream] packages:', packages);
 
     // Parse the AI response
     const parsed = parseAIResponse(response);
 
     // Log what was parsed
-    console.log('[apply-ai-code-stream] Parsed result:');
-    console.log('[apply-ai-code-stream] Files found:', parsed.files.length);
+    // console.log('[apply-ai-code-stream] Parsed result:');
+    // console.log('[apply-ai-code-stream] Files found:', parsed.files.length);
     if (parsed.files.length > 0) {
-      parsed.files.forEach(f => {
+      /* parsed.files.forEach(f => {
         console.log(`[apply-ai-code-stream] - ${f.path} (${f.content.length} chars)`);
-      });
+      }); */
     }
-    console.log('[apply-ai-code-stream] Packages found:', parsed.packages);
+    // console.log('[apply-ai-code-stream] Packages found:', parsed.packages);
 
     // Initialize existingFiles if not already
     if (!global.existingFiles) {

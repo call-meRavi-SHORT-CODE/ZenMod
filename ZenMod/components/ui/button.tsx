@@ -9,10 +9,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:opacity-90 [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.1),_0px_1px_6px_0px_rgba(0,0,0,0.1)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.05),_0px_1px_6px_0px_rgba(0,0,0,0.05)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
+        secondary: "bg-[#F3F4F6] text-[#1F1F1F] hover:bg-[#F3F4F6]/80 [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.05),_0px_1px_6px_0px_rgba(0,0,0,0.05)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
         outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground text-foreground [box-shadow:inset_0px_-2px_0px_0px_rgba(0,0,0,0.03),_0px_1px_6px_0px_rgba(0,0,0,0.03)] hover:translate-y-[1px] hover:scale-[0.98] active:translate-y-[2px] active:scale-[0.97] transition-all duration-200",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-all duration-200",
-        code: "bg-[#36322F] dark:bg-zinc-800 text-white hover:opacity-90 transition-all duration-200",
+        code: "bg-[#101010] text-[#FFFFFF] hover:opacity-90 transition-all duration-200 border border-[#FFFFFF]/10",
         orange: "bg-orange-500 text-white hover:bg-orange-600 transition-all duration-200",
         ghost: "hover:bg-accent hover:text-accent-foreground",
       },

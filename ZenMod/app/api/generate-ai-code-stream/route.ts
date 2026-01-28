@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+export const runtime = 'nodejs'; // Force Node.js runtime to resolve Supabase fetch issues in local dev
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { createGroq } from '@ai-sdk/groq';
@@ -17,7 +18,7 @@ import { appConfig } from '@/config/app.config';
 console.log('[generate-ai-code-stream] GROQ_API_KEY loaded:', process.env.GROQ_API_KEY ? `Yes (${process.env.GROQ_API_KEY.substring(0, 8)}...)` : 'No');
 
 const groq = createGroq({
-  apiKey: process.env.GROQ_API_KEY,
+  apiKey: "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",
 });
 
 const anthropic = createAnthropic({
@@ -86,14 +87,14 @@ export async function POST(request: NextRequest) {
   try {
     const { prompt, model = 'openai/gpt-oss-20b', context, isEdit = false } = await request.json();
 
-    console.log('[generate-ai-code-stream] Received request:');
-    console.log('[generate-ai-code-stream] - model:', model);
-    console.log('[generate-ai-code-stream] - GROQ_API_KEY present:', !!process.env.GROQ_API_KEY);
-    console.log('[generate-ai-code-stream] - GROQ_API_KEY prefix:', process.env.GROQ_API_KEY?.substring(0, 10));
-    console.log('[generate-ai-code-stream] - isEdit:', isEdit);
-    console.log('[generate-ai-code-stream] - context.sandboxId:', context?.sandboxId);
-    console.log('[generate-ai-code-stream] - context.currentFiles:', context?.currentFiles ? Object.keys(context.currentFiles) : 'none');
-    console.log('[generate-ai-code-stream] - currentFiles count:', context?.currentFiles ? Object.keys(context.currentFiles).length : 0);
+    // console.log('[generate-ai-code-stream] Received request:');
+    // console.log('[generate-ai-code-stream] - model:', model);
+    // console.log('[generate-ai-code-stream] - GROQ_API_KEY present:', !!process.env.GROQ_API_KEY);
+    // console.log('[generate-ai-code-stream] - GROQ_API_KEY prefix:', process.env.GROQ_API_KEY?.substring(0, 10));
+    // console.log('[generate-ai-code-stream] - isEdit:', isEdit);
+    // console.log('[generate-ai-code-stream] - context.sandboxId:', context?.sandboxId);
+    // console.log('[generate-ai-code-stream] - context.currentFiles:', context?.currentFiles ? Object.keys(context.currentFiles) : 'none');
+    // console.log('[generate-ai-code-stream] - currentFiles count:', context?.currentFiles ? Object.keys(context.currentFiles).length : 0);
 
     const supabase = await createClient();
 
@@ -102,8 +103,8 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       console.error('[generate-ai-code-stream] Auth failed:', authError?.message || 'No user found');
       // Log all cookies for debugging (sensitive info removed)
-      const cookieStore = await cookies();
-      console.log('[generate-ai-code-stream] Cookies names:', cookieStore.getAll().map(c => c.name));
+      // const cookieStore = await cookies();
+      // console.log('[generate-ai-code-stream] Cookies names:', cookieStore.getAll().map(c => c.name));
       return NextResponse.json({ error: "Unauthorized", details: authError?.message }, { status: 401 });
     }
 
@@ -142,12 +143,12 @@ export async function POST(request: NextRequest) {
     messages.push(userMessage);
 
     // Debug: Show a sample of actual file content
-    if (context?.currentFiles && Object.keys(context.currentFiles).length > 0) {
+    /* if (context?.currentFiles && Object.keys(context.currentFiles).length > 0) {
       const firstFile = Object.entries(context.currentFiles)[0];
       console.log('[generate-ai-code-stream] - sample file:', firstFile[0]);
       console.log('[generate-ai-code-stream] - sample content preview:',
         typeof firstFile[1] === 'string' ? firstFile[1].substring(0, 100) + '...' : 'not a string');
-    }
+    } */
 
     if (!prompt) {
       return NextResponse.json({
